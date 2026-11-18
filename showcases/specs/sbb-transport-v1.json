@@ -2,8 +2,8 @@
   "openapi": "3.1.0",
   "info": {
     "title": "SBB Swiss Public Transport API",
-    "version": "1.0.0",
-    "description": "Live Swiss public transport timetable, connections, locations and stationboard API (transport.opendata.ch / SBB CFF FFS)."
+    "version": "2.0.0",
+    "description": "v2 of the Swiss public transport timetable API with stricter UIC station codes, reduced query limits, and carbon footprint metrics."
   },
   "servers": [
     {
@@ -14,13 +14,12 @@
     "/v1/locations": {
       "get": {
         "operationId": "searchLocations",
-        "summary": "Search Swiss train stations, bus stops, POIs and addresses",
+        "summary": "Search Swiss train stations and bus stops (POIs removed in v2)",
         "parameters": [
           {
             "name": "query",
             "in": "query",
             "required": true,
-            "description": "Location search query (e.g. Zürich HB, Bern, Basel SBB)",
             "schema": {
               "type": "string"
             }
@@ -29,10 +28,9 @@
             "name": "type",
             "in": "query",
             "required": false,
-            "description": "Location filter type (all, station, poi, address)",
             "schema": {
               "type": "string",
-              "enum": ["all", "station", "poi", "address"]
+              "enum": ["station", "address"]
             }
           }
         ],
@@ -59,7 +57,6 @@
             "name": "from",
             "in": "query",
             "required": true,
-            "description": "Departure station name or UIC ID (e.g. Zürich HB)",
             "schema": {
               "type": "string"
             }
@@ -68,7 +65,15 @@
             "name": "to",
             "in": "query",
             "required": true,
-            "description": "Arrival station name or UIC ID (e.g. Bern)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-SBB-Client-Id",
+            "in": "header",
+            "required": true,
+            "description": "Mandatory client identifier added in v2",
             "schema": {
               "type": "string"
             }
@@ -77,20 +82,27 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Number of connections to return (1 - 16)",
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 16
+              "maximum": 10
             }
           },
           {
             "name": "direct",
             "in": "query",
             "required": false,
-            "description": "Only direct connections (0 or 1)",
             "schema": {
-              "type": "integer"
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bike",
+            "in": "query",
+            "required": false,
+            "description": "Filter connections allowing bicycle transport",
+            "schema": {
+              "type": "boolean"
             }
           }
         ],
@@ -117,7 +129,6 @@
             "name": "station",
             "in": "query",
             "required": true,
-            "description": "Station name or UIC ID (e.g. Zürich HB)",
             "schema": {
               "type": "string"
             }
@@ -126,11 +137,10 @@
             "name": "limit",
             "in": "query",
             "required": false,
-            "description": "Maximum number of departures to return",
             "schema": {
               "type": "integer",
               "minimum": 1,
-              "maximum": 40
+              "maximum": 20
             }
           }
         ],
@@ -175,9 +185,6 @@
           },
           "name": {
             "type": ["string", "null"]
-          },
-          "score": {
-            "type": ["number", "null"]
           },
           "coordinate": {
             "$ref": "#/components/schemas/Coordinates"
@@ -261,6 +268,9 @@
             "items": {
               "type": "string"
             }
+          },
+          "co2_grams": {
+            "type": ["number", "null"]
           }
         }
       },
