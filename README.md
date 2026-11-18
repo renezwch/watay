@@ -1,4 +1,4 @@
-# 🌊 Watay (`watay.dev`)
+# 🪢 Watay (`watay.dev`)
 
 > **Autonomous Multi-Language SDK Generation, SpecDrift Semantic Gatekeeper & Contract Testing.**  
 > *100% Client-Side Execution. Zero-Data-Retention. Zero External Runtime Dependencies.*
@@ -131,7 +131,7 @@ jobs:
 ### Automated PR Comment Example
 When a Pull Request introduces API changes, Watay automatically publishes an idempotent Markdown report:
 
-> ## 🌊 Watay SpecDrift & SDK Report
+> ## 🪢 Watay SpecDrift & SDK Report
 > > 🛡️ **Zero-Data-Retention:** 100% client-side runner execution. No specifications or secrets were transferred to external servers.
 > 
 > **API:** `PetStore API` v`2.1.0` | **License Tier:** `PRO`

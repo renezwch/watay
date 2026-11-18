@@ -250,7 +250,7 @@ export async function executeAction(
   const config = parseActionConfig(envOverride);
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🌊 Watay – Autonomous Client-Side SDK & SpecDrift Gatekeeper');
+  console.log('🪢 Watay – Autonomous Client-Side SDK & SpecDrift Gatekeeper');
   console.log('🛡️ Zero-Data-Retention: 100% executed in your local runner');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
@@ -481,7 +481,7 @@ function buildMarkdownReport(params: {
 
   const lines: string[] = [];
   lines.push('<!-- watay-specdrift-report -->');
-  lines.push('## 🌊 Watay SpecDrift & SDK Report');
+  lines.push('## 🪢 Watay SpecDrift & SDK Report');
   lines.push('');
   lines.push(
     '> 🛡️ **Zero-Data-Retention:** 100% client-side runner execution. No specifications, schemas or secrets were transferred to external servers.'

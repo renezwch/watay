@@ -1,4 +1,4 @@
-# 🌊 Watay Autonomous Showcase Ecosystem
+# 🪢 Watay Autonomous Showcase Ecosystem
 
 > **Live Proof of the Autonomous Developer-Tool GTM Playbook (`watay.dev`)**  
 > *Production-Grade OpenAPI 3.1 Specifications · Idiomatic TypeScript & Python SDKs · SpecDrift Gatekeeper Reports · 100% Client-Side*
