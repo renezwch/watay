@@ -25,7 +25,7 @@ export type Feature =
   | 'contract-tests'
   | 'pr-comment'
   | 'self-heal'
-  | 'specdrift-gate'
+  | 'contract-guard'
   | 'fail-on-breaking'
   | 'auto-pr'
   | 'auto-publish'
@@ -47,7 +47,7 @@ const PRO_FEATURES: readonly string[] = [
   ...FREE_FEATURES,
   'pr-comment',
   'self-heal',
-  'specdrift-gate',
+  'contract-guard',
   'fail-on-breaking',
   'auto-pr',
 ];

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Interactive Watay Showcase Demo — builds all 3 showcase SDKs, displays
- * SpecDrift breaking-change reports, and runs all 6 contract-test suites live.
+ * Contract Guard breaking-change reports, and runs all 6 contract-test suites live.
  */
 import { spawnSync } from 'node:child_process';
 import { realpathSync } from 'node:fs';
@@ -45,13 +45,13 @@ export async function runDemo(): Promise<number> {
       `  Spec: v${sc.v1.version} -> v${sc.v2.version} | ${sc.v2.operations.length} operations, ${Object.keys(sc.v2.schemas).length} schemas\n`,
     );
     process.stdout.write(
-      `  SpecDrift: ${sc.diff.breaking.length} breaking, ${sc.diff.nonBreaking.length} non-breaking, ${sc.diff.info.length} info (bump: ${sc.diff.suggestedBump})\n`,
+      `  Contract Guard: ${sc.diff.breaking.length} breaking, ${sc.diff.nonBreaking.length} non-breaking, ${sc.diff.info.length} info (bump: ${sc.diff.suggestedBump})\n`,
     );
     for (const c of sc.diff.breaking.slice(0, 4)) {
       process.stdout.write(`    - [BREAKING] ${c.code}: ${c.location}\n`);
     }
     if (sc.diff.breaking.length > 4) {
-      process.stdout.write(`    - ... (+${sc.diff.breaking.length - 4} more in SPECDRIFT_REPORT.md)\n`);
+      process.stdout.write(`    - ... (+${sc.diff.breaking.length - 4} more in BREAKING_CHANGES.md)\n`);
     }
 
     const runs: ContractRun[] = [];
@@ -80,7 +80,7 @@ export async function runDemo(): Promise<number> {
 
   process.stdout.write(
     allOk
-      ? '✅ All 3 showcases (6 generated SDKs + SpecDrift reports + live mock contract tests) PASSED.\n'
+      ? '✅ All 3 showcases (6 generated SDKs + Contract Guard reports + live mock contract tests) PASSED.\n'
       : '❌ One or more showcase contract test suites FAILED.\n',
   );
   return allOk ? 0 : 1;

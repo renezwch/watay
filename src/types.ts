@@ -104,7 +104,7 @@ export interface WatayIR {
   securitySchemes?: Record<string, SecuritySchemeIR>;
 }
 
-// ---------- SpecDrift ----------
+// ---------- Contract Guard ----------
 export type Severity = 'breaking' | 'non-breaking' | 'info';
 
 export interface DiffChange {

@@ -1,6 +1,6 @@
 # 🪢 Watay (`watay.dev`)
 
-> **Autonomous Multi-Language SDK Generation, SpecDrift Semantic Gatekeeper & Contract Testing.**  
+> **Autonomous Multi-Language SDK Generation, Contract Guard Semantic Gatekeeper & Contract Testing.**  
 > *100% Client-Side Execution. Zero-Data-Retention. Zero External Runtime Dependencies.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -22,7 +22,7 @@ Instead of paying enterprise SaaS platforms tens of thousands of dollars to rout
                                       │       Your CI / GitHub Actions Runner          │
                                       │  (100% Client-Side · Zero Data Retention)      │
                                       │                                                │
-[OpenAPI 3.0 / 3.1] ───> [Watay CLI] ─┼─► SpecDrift Differ ──► Gatekeeper (Block PR)   │
+[OpenAPI 3.0 / 3.1] ───> [Watay CLI] ─┼─► Contract Differ ──► Gatekeeper (Block PR)   │
  (JSON or YAML)                       │  ├─► TS Generator   ──► Idiomatic TS Client    │
                                       │  ├─► PY Generator   ──► Pure Python Stdlib SDK │
                                       │  └─► Healer Engine  ──► Contract Tests (Mock)  │
@@ -34,7 +34,7 @@ Instead of paying enterprise SaaS platforms tens of thousands of dollars to rout
 ## 🚀 Key Highlights
 
 - 🛡️ **Zero-Data-Retention (ZDR):** Your OpenAPI specifications, API keys, source code, and schemas never leave your infrastructure. The only external request Watay can make is an optional, lightweight license-key status ping directly to Merchant-of-Record endpoints (Polar.sh / LemonSqueezy).
-- 🧬 **SpecDrift Semantic Differ:** Direction-aware OpenAPI diffing. Unlike naive textual diffs, SpecDrift understands contravariance and covariance: adding an optional field to a request is non-breaking, but removing a response field or adding a required request parameter is immediately flagged as a breaking change.
+- 🧬 **Contract Guard Semantic Differ:** Direction-aware OpenAPI diffing. Unlike naive textual diffs, Contract Guard understands contravariance and covariance: adding an optional field to a request is non-breaking, but removing a response field or adding a required request parameter is immediately flagged as a breaking change.
 - 📦 **Multi-Language Idiomatic Codegen:**
   - **TypeScript:** Fully typed, zero-dependency client with modern `fetch`, typed error classes, and runtime payload validation.
   - **Python:** Python 3.10+ standard library client using `dataclasses` and `urllib.request` (zero third-party dependencies required).
@@ -48,7 +48,7 @@ Instead of paying enterprise SaaS platforms tens of thousands of dollars to rout
 
 You can run Watay directly without installing anything via `npx`:
 
-### 1. Semantic Breaking-Change Detection (`SpecDrift`)
+### 1. Semantic Breaking-Change Detection (`Contract Guard`)
 Compare your current OpenAPI specification against a baseline:
 
 ```bash
@@ -86,10 +86,10 @@ npx watay verify openapi.json --lang ts,python
 
 Add Watay as a gatekeeper in your Pull Request workflow:
 
-Create `.github/workflows/watay-specdrift.yml`:
+Create `.github/workflows/watay-contract-guard.yml`:
 
 ```yaml
-name: Watay SpecDrift Gatekeeper & SDK Build
+name: Watay Contract Guard & SDK Build
 
 on:
   pull_request:
@@ -103,7 +103,7 @@ permissions:
   pull-requests: write # Required for automated PR comments
 
 jobs:
-  specdrift:
+  contract-guard:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -131,12 +131,12 @@ jobs:
 ### Automated PR Comment Example
 When a Pull Request introduces API changes, Watay automatically publishes an idempotent Markdown report:
 
-> ## 🪢 Watay SpecDrift & SDK Report
+> ## 🪢 Watay Contract Guard & SDK Report
 > > 🛡️ **Zero-Data-Retention:** 100% client-side runner execution. No specifications or secrets were transferred to external servers.
 > 
 > **API:** `PetStore API` v`2.1.0` | **License Tier:** `PRO`
 > 
-> ### 🚨 Semantic SpecDrift Analysis
+> ### 🚨 Semantic Breaking-Change Analysis
 > - **Suggested SemVer Bump:** `MAJOR`
 > - **Breaking Changes:** `1`
 > - **Non-Breaking Changes:** `2`
@@ -198,7 +198,7 @@ Watay is built on an open-core model. All core CLI generation and diffing capabi
 | **Execution Architecture** | 100% Client-Side | 100% Client-Side | 100% Client-Side |
 | **Zero Data Retention** | ✅ Yes | ✅ Yes | ✅ Yes |
 | **Multi-Language Codegen (TS & Python)**| ✅ Unlimited | ✅ Unlimited | ✅ Unlimited |
-| **SpecDrift Semantic Differ** | ✅ CLI | ✅ CLI + CI Gate | ✅ CLI + CI Gate |
+| **Contract Guard Semantic Differ** | ✅ CLI | ✅ CLI + CI Gate | ✅ CLI + CI Gate |
 | **Automated PR Markdown Comments** | ❌ | ✅ Yes | ✅ Yes |
 | **Mock Contract Test Generation** | Basic | ✅ Automated | ✅ Automated |
 | **Self-Healing Build Verification** | ❌ | ✅ Included | ✅ Priority Loop |

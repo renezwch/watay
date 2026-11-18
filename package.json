@@ -1,7 +1,7 @@
 {
   "name": "watay",
   "version": "0.1.0",
-  "description": "Autonomous SDK generation, semantic OpenAPI breaking-change detection (SpecDrift) and contract testing. 100% client-side.",
+  "description": "Autonomous SDK generation, semantic OpenAPI breaking-change detection (Contract Guard) and contract testing. 100% client-side.",
   "type": "module",
   "license": "MIT",
   "homepage": "https://watay.dev",

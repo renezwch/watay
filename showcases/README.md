@@ -1,7 +1,7 @@
 # 🪢 Watay Autonomous Showcase Ecosystem
 
 > **Live Proof of the Autonomous Developer-Tool GTM Playbook (`watay.dev`)**  
-> *Production-Grade OpenAPI 3.1 Specifications · Idiomatic TypeScript & Python SDKs · SpecDrift Gatekeeper Reports · 100% Client-Side*
+> *Production-Grade OpenAPI 3.1 Specifications · Idiomatic TypeScript & Python SDKs · Contract Guard Reports · 100% Client-Side*
 
 ---
 
@@ -31,19 +31,19 @@ products/watay/showcases/
 │   ├── fintech-ledger-v2.json         # Payment Ledger v2 (Breaking compliance fields & pagination)
 │   ├── cloud-deploy-v1.json           # Cloud Deploy initial release
 │   └── cloud-deploy-v2.json           # Cloud Deploy v2 (Breaking container config restructuring)
-└── generated/                         # Autonomously compiled SDKs & SpecDrift reports
+└── generated/                         # Autonomously compiled SDKs & Contract Guard reports
     ├── llm-gateway/
     │   ├── typescript/                # Zero-dep typed TypeScript SDK + node:test contract tests
     │   ├── python/                    # Python 3.10+ dataclass SDK + unittest contract tests
-    │   └── SPECDRIFT_REPORT.md        # Semantic breaking-change analysis (v1 -> v2)
+    │   └── BREAKING_CHANGES.md        # Semantic breaking-change analysis (v1 -> v2)
     ├── fintech-ledger/
     │   ├── typescript/
     │   ├── python/
-    │   └── SPECDRIFT_REPORT.md
+    │   └── BREAKING_CHANGES.md
     └── cloud-deploy/
         ├── typescript/
         ├── python/
-        └── SPECDRIFT_REPORT.md
+        └── BREAKING_CHANGES.md
 ```
 
 ---
@@ -51,13 +51,13 @@ products/watay/showcases/
 ## 🚀 Quickstart: Run the Showcases
 
 ### 1. Interactive One-Command Demo
-To run the full demonstration across all three showcases with formatted terminal outputs, SpecDrift summaries, and live contract test execution:
+To run the full demonstration across all three showcases with formatted terminal outputs, Contract Guard summaries, and live contract test execution:
 
 ```bash
 node products/watay/showcases/run-demo.ts
 ```
 
-### 2. Regenerate All Showcase SDKs & SpecDrift Reports
+### 2. Regenerate All Showcase SDKs & Breaking-Change Reports
 To re-run the autonomous generation and verification pipeline (`verifyOutput` / `selfHeal`):
 
 ```bash
@@ -94,7 +94,7 @@ python3 -W error::ResourceWarning -m unittest discover -s products/watay/showcas
 
 ---
 
-## 🔍 Showcase Highlights & SpecDrift Analysis
+## 🔍 Showcase Highlights & Breaking-Change Analysis
 
 ### 1. AI/LLM Gateway (`llm-gateway`)
 - **Key Operations:** `createChatCompletion`, `createEmbeddings`, `listModels`, `getModel`, `moderateContent`.
@@ -137,4 +137,4 @@ python3 -W error::ResourceWarning -m unittest discover -s products/watay/showcas
 
 ## 🌐 Interactive Web Explorer
 
-Visit the official Watay landing page at **`products/watay/docs/index.html`** (or [watay.dev](https://watay.dev)) to interactively switch between these showcases, inspect generated code snippets, and review the live SpecDrift breaking-change diffs directly in your browser.
+Visit the official Watay landing page at **`products/watay/docs/index.html`** (or [watay.dev](https://watay.dev)) to interactively switch between these showcases, inspect generated code snippets, and review the live Contract Guard breaking-change diffs directly in your browser.

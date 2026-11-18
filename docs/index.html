@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Watay – Autonomous Multi-Language SDK Generation & SpecDrift Gatekeeper</title>
-  <meta name="description" content="Autonomous TypeScript & Python SDK generation, semantic OpenAPI breaking-change detection, and contract testing. 100% Client-Side with Zero-Data-Retention.">
+  <title>Watay – Autonomous Multi-Language SDK Generation, Contract Testing & Self-Healing CI</title>
+  <meta name="description" content="Autonomous TypeScript & Python SDK generation, mock-server contract testing, and self-healing verification from OpenAPI 3.0/3.1. 100% Client-Side with Zero-Data-Retention.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22 fill=%22none%22><rect x=%223%22 y=%228%22 width=%2216%22 height=%2216%22 rx=%225%22 stroke=%22%2338bdf8%22 stroke-width=%223%22/><rect x=%2213%22 y=%228%22 width=%2216%22 height=%2216%22 rx=%225%22 stroke=%22%23c084fc%22 stroke-width=%223%22/><circle cx=%2216%22 cy=%2216%22 r=%222.5%22 fill=%22%2334d399%22/></svg>">
   <style>
     :root {
@@ -560,14 +560,14 @@
       <div class="hero-badge">
         <span></span> 100% Client-Side Engine · Zero Data Retention
       </div>
-      <h1>Autonomous Multi-Language SDKs<br>& SpecDrift Gatekeeper</h1>
+      <h1>Autonomous Multi-Language SDKs,<br>Contract Tests & Self-Healing CI</h1>
       <p class="hero-sub">
-        <strong style="color: #e2e8f0;">Watay</strong> <em>(Quechua for "to bind / link together")</em> inextricably binds your OpenAPI 3.0/3.1 specifications to idiomatic TypeScript & Python SDKs, contract tests, and breaking-change checks—100% inside your GitHub runner.
+        <strong style="color: #e2e8f0;">Watay</strong> <em>(Quechua for "to bind / link together")</em> inextricably binds your OpenAPI 3.0/3.1 specifications to idiomatic TypeScript & Python SDKs, mock-server contract tests, and breaking-change gates—100% inside your GitHub runner.
       </p>
 
       <div class="terminal-bar">
         <span class="terminal-prefix">$</span>
-        <span id="cmd-text">npx watay diff openapi-v1.json openapi-v2.json --fail-on-breaking</span>
+        <span id="cmd-text">npx watay generate openapi.json --lang ts,python --verify --heal</span>
         <button class="btn-copy" onclick="copyCommand(this)">Copy</button>
       </div>
 
@@ -603,7 +603,7 @@
         </div>
       </div>
 
-      <!-- Code & SpecDrift Viewer Box -->
+      <!-- Code & Contract Guard Viewer Box -->
       <div class="preview-card">
         <div class="preview-header">
           <div class="window-dots">
@@ -614,7 +614,7 @@
           <div class="tabs">
             <button class="tab-btn active" id="subtab-ts" onclick="selectSubTab('ts', this)">TypeScript SDK</button>
             <button class="tab-btn" id="subtab-py" onclick="selectSubTab('py', this)">Python SDK</button>
-            <button class="tab-btn" id="subtab-diff" onclick="selectSubTab('diff', this)">SpecDrift Report (v1 → v2)</button>
+            <button class="tab-btn" id="subtab-diff" onclick="selectSubTab('diff', this)">Breaking-Change Report (v1 → v2)</button>
           </div>
           <button class="btn-copy" onclick="copySnippet(this)">Copy Snippet</button>
         </div>
@@ -636,7 +636,7 @@
   <span class="str">'X-Tenant-Id'</span>: <span class="str">'tenant_enterprise_01'</span>,
   body: {
     model: <span class="str">'gemini-4-hydrogen'</span>,
-    messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Explain contravariant SpecDrift'</span> }],
+    messages: [{ role: <span class="str">'user'</span>, content: <span class="str">'Generate contract-verified SDKs'</span> }],
     temperature: 0.7
   }
 });
@@ -655,13 +655,13 @@ completion = client.<span class="fn">create_chat_completion</span>(
     x_tenant_id=<span class="str">"tenant_enterprise_01"</span>,
     body={
         <span class="str">"model"</span>: <span class="str">"gemini-4-hydrogen"</span>,
-        <span class="str">"messages"</span>: [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Explain contravariant SpecDrift"</span>}],
+        <span class="str">"messages"</span>: [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Generate contract-verified SDKs"</span>}],
         <span class="str">"temperature"</span>: 0.7
     }
 )
 print(completion.choices[0].message.content)</code></pre>
 
-            <pre id="llm-diff" style="display: none;"><code><span class="tag">## Watay SpecDrift Report: NexusAI LLM Gateway 1.0.0 → 2.0.0</span>
+            <pre id="llm-diff" style="display: none;"><code><span class="tag">## Watay Breaking-Change Report: NexusAI LLM Gateway 1.0.0 → 2.0.0</span>
 <span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9 · Info: 9</span>
 
 <span class="typ">### 🚨 Breaking changes (7)</span>
@@ -725,7 +725,7 @@ transfer = ledger.<span class="fn">create_transfer</span>(
 )
 print(<span class="str">f"Settled transfer: {transfer.id}"</span>)</code></pre>
 
-            <pre id="fintech-diff" style="display: none;"><code><span class="tag">## Watay SpecDrift Report: Aurelia FinTech Ledger 1.0.0 → 2.0.0</span>
+            <pre id="fintech-diff" style="display: none;"><code><span class="tag">## Watay Breaking-Change Report: Aurelia FinTech Ledger 1.0.0 → 2.0.0</span>
 <span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9 · Info: 3</span>
 
 <span class="typ">### 🚨 Breaking changes (7)</span>
@@ -786,7 +786,7 @@ deploy = cloud.<span class="fn">create_deployment</span>(
 )
 print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"</span>)</code></pre>
 
-            <pre id="cloud-diff" style="display: none;"><code><span class="tag">## Watay SpecDrift Report: Stratos Cloud Deploy 1.0.0 → 2.0.0</span>
+            <pre id="cloud-diff" style="display: none;"><code><span class="tag">## Watay Breaking-Change Report: Stratos Cloud Deploy 1.0.0 → 2.0.0</span>
 <span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 8 · Non-breaking: 8 · Info: 3</span>
 
 <span class="typ">### 🚨 Breaking changes (8)</span>
@@ -824,7 +824,7 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
 
         <div class="feature-card">
           <div class="feature-icon">🧬</div>
-          <h3>Directional SpecDrift</h3>
+          <h3>Directional Contract Guard</h3>
           <p>
             Distinguishes between request parameters (contravariant) and response properties (covariant). Flags breaking changes with surgical accuracy.
           </p>
@@ -893,7 +893,7 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
             <ul class="price-features">
               <li><span class="check">✓</span> 100% Client-Side CLI</li>
               <li><span class="check">✓</span> Unlimited TypeScript & Python SDKs</li>
-              <li><span class="check">✓</span> SpecDrift Semantic Differ (Local)</li>
+              <li><span class="check">✓</span> Contract Guard Semantic Differ (Local)</li>
               <li><span class="check">✓</span> Zero Data Retention</li>
               <li><span class="check">✓</span> Deterministic AST Output</li>
             </ul>
@@ -910,7 +910,7 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
             <div class="price-val">$49 <span>/ repo / mo</span></div>
             <ul class="price-features">
               <li><span class="check">✓</span> Everything in Community</li>
-              <li><span class="check">✓</span> GitHub Action SpecDrift Gatekeeper</li>
+              <li><span class="check">✓</span> GitHub Action Contract Guard</li>
               <li><span class="check">✓</span> Automated PR Markdown Comments</li>
               <li><span class="check">✓</span> CI Block on Breaking Changes</li>
               <li><span class="check">✓</span> Self-Healing Mock Verification</li>

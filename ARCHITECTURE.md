@@ -1,7 +1,7 @@
 # Watay – Technische Architektur-Spezifikation (MVP v0.1)
 
 **Autor:** `architect` · **Status:** verbindlich für `dev-core`, `dev-codegen`, `dev-action`, `critic`
-**Produkt:** Watay (`watay.dev`, `npx watay`) – Multi-Language-SDK-Generierung, SpecDrift (semantische Breaking-Change-Erkennung), Contract-Tests, Self-Healing. **100 % client-side** (CLI + GitHub Action), Zero-Data-Retention.
+**Produkt:** Watay (`watay.dev`, `npx watay`) – Multi-Language-SDK-Generierung, Contract Guard (semantische Breaking-Change-Erkennung), Contract-Tests, Self-Healing. **100 % client-side** (CLI + GitHub Action), Zero-Data-Retention.
 
 ---
 

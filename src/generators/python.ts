@@ -1016,7 +1016,7 @@ function genPythonReadme(ir: WatayIR, pkgName: string, modName: string, classNam
   return [
     '# ' + pkgName,
     '',
-    '> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, SpecDrift-safe & contract-verified.',
+    '> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, Contract-safe & contract-verified.',
     '',
     'Typed Python client for **' + ir.title + '** (API version `' + ir.version + '`).',
     'Built with stdlib `dataclasses` + `urllib`, runtime contract validation, idempotent retries and typed errors.',

@@ -1,6 +1,6 @@
 # stratos-cloud-deploy-sdk
 
-> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, SpecDrift-safe & contract-verified.
+> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, Contract-safe & contract-verified.
 
 Typed TypeScript client for **Stratos Cloud Deploy** (API version `2.0.0`).
 Built with native `fetch`, runtime request/response schema validation, idempotent retries and typed errors.

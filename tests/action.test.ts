@@ -27,7 +27,7 @@ test('checkLicense - Offline Pro Demo Key (WATAY-DEMO-PRO)', async () => {
   assert.equal(result.valid, true);
   assert.equal(result.source, 'offline-demo');
   assert.ok(result.features?.includes('pr-comment'));
-  assert.ok(result.features?.includes('specdrift-gate'));
+  assert.ok(result.features?.includes('contract-guard'));
   assert.ok(result.features?.includes('self-heal'));
 });
 
@@ -66,7 +66,7 @@ test('tierAllows - Feature permissions', () => {
   // Pro
   assert.equal(tierAllows('pro', 'diff'), true);
   assert.equal(tierAllows('pro', 'pr-comment'), true);
-  assert.equal(tierAllows('pro', 'specdrift-gate'), true);
+  assert.equal(tierAllows('pro', 'contract-guard'), true);
   assert.equal(tierAllows('pro', 'self-heal'), true);
   assert.equal(tierAllows('pro', 'custom-templates'), false);
 
@@ -199,6 +199,6 @@ test('executeAction - Clean run with mock spec', async (t) => {
 
   assert.equal(result.exitCode, 0);
   assert.equal(result.license.tier, 'pro');
-  assert.ok(result.markdownReport.includes('Watay SpecDrift & SDK Report'));
+  assert.ok(result.markdownReport.includes('Watay Contract Guard & SDK Report'));
   assert.ok(result.markdownReport.includes('Test PetStore API'));
 });

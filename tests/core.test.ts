@@ -147,7 +147,7 @@ paths:
   });
 });
 
-describe('Watay SpecDrift Differ', () => {
+describe('Watay Contract Differ', () => {
   it('returns zero changes and patch bump for identical specs', () => {
     const v1 = loadSpecFile(V1_PATH);
     const res = diffSpecs(v1, v1);
@@ -322,7 +322,7 @@ describe('Watay CLI & Path Security', () => {
       encoding: 'utf8',
     });
     assert.equal(breakingRun.status, 1);
-    assert.match(breakingRun.stdout, /Watay SpecDrift Report/);
+    assert.match(breakingRun.stdout, /Watay Breaking-Change Report/);
     assert.match(breakingRun.stdout, /Breaking changes/);
 
     const cleanRun = spawnSync(process.execPath, [CLI_PATH, 'diff', '--old', V1_PATH, '--new', V1_PATH, '--fail-on-breaking'], {

@@ -3,7 +3,7 @@
  * 
  * Orchestrates:
  * 1. Client-Side Serverless License Verification (Zero-Data-Retention)
- * 2. SpecDrift Detection (Comparing PR Head Spec against Base Spec)
+ * 2. Contract Guard Detection (Comparing PR Head Spec against Base Spec)
  * 3. PR Commenting & GitHub Step Summary Generation
  * 4. SDK Generation & Build Verification
  * 5. Gatekeeping: Fails CI if breaking changes are detected without override
@@ -250,7 +250,7 @@ export async function executeAction(
   const config = parseActionConfig(envOverride);
 
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🪢 Watay – Autonomous Client-Side SDK & SpecDrift Gatekeeper');
+  console.log('🪢 Watay – Autonomous Client-Side SDK & Contract Guard');
   console.log('🛡️ Zero-Data-Retention: 100% executed in your local runner');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
@@ -292,25 +292,25 @@ export async function executeAction(
   }
   console.log(`[Spec] Loaded head spec "${headIR.title}" v${headIR.version} (${headIR.operations.length} operations)`);
 
-  // 3. Load Base Spec (for SpecDrift Diff)
+  // 3. Load Base Spec (for Contract Guard Diff)
   let baseIR: WatayIR | null = null;
   try {
     if (config.baseSpecPath && fs.existsSync(config.baseSpecPath)) {
       baseIR = await loadSpec(config.baseSpecPath);
       if (baseIR) {
-        console.log(`[SpecDrift] Loaded explicit base spec from: ${config.baseSpecPath}`);
+        console.log(`[Contract Guard] Loaded explicit base spec from: ${config.baseSpecPath}`);
       }
     } else if (config.baseRef) {
       baseIR = await loadSpec(config.specPath, config.baseRef);
       if (baseIR) {
-        console.log(`[SpecDrift] Loaded base spec from git ref "${config.baseRef}:${config.specPath}"`);
+        console.log(`[Contract Guard] Loaded base spec from git ref "${config.baseRef}:${config.specPath}"`);
       }
     }
   } catch {
-    console.log('[SpecDrift] Note: Base specification could not be parsed; proceeding without diff');
+    console.log('[Contract Guard] Note: Base specification could not be parsed; proceeding without diff');
   }
 
-  // 4. Compute SpecDrift Diff
+  // 4. Compute Contract Guard Diff
   let diff: DiffResult | undefined;
   if (baseIR) {
     try {
@@ -319,7 +319,7 @@ export async function executeAction(
         diff = differMod.diffSpecs(baseIR, headIR);
       }
     } catch {
-      console.log('[SpecDrift] Differ engine not yet available or failed, skipping semantic diff');
+      console.log('[Contract Guard] Differ engine not yet available or failed, skipping semantic diff');
     }
   }
 
@@ -439,14 +439,14 @@ export async function executeAction(
   // 10. Gatekeeper Evaluation
   let exitCode = 0;
   if (diff?.hasBreaking) {
-    console.log(`\n🚨 [SpecDrift] Found ${diff.breaking.length} BREAKING changes!`);
+    console.log(`\n🚨 [Contract Guard] Found ${diff.breaking.length} BREAKING changes!`);
     for (const b of diff.breaking) {
       console.log(`   - ❌ [${b.code}] ${b.location}: ${b.message}`);
     }
 
     if (config.failOnBreaking) {
       if (config.allowBreakingLabel) {
-        console.log('⚠️ [SpecDrift] Breaking changes detected, but permitted via label "watay-allow-breaking".');
+        console.log('⚠️ [Contract Guard] Breaking changes detected, but permitted via label "watay-allow-breaking".');
       } else {
         console.error('❌ [Gatekeeper] Failing CI runner due to unapproved breaking API changes.');
         console.error('💡 To override, add the "watay-allow-breaking" label to your pull request.');
@@ -454,7 +454,7 @@ export async function executeAction(
       }
     }
   } else {
-    console.log('✅ [SpecDrift] Clean! No breaking changes detected.');
+    console.log('✅ [Contract Guard] Clean! No breaking changes detected.');
   }
 
   return {
@@ -480,8 +480,8 @@ function buildMarkdownReport(params: {
   const { headIR, baseIR, diff, license, generatedSdks, config } = params;
 
   const lines: string[] = [];
-  lines.push('<!-- watay-specdrift-report -->');
-  lines.push('## 🪢 Watay SpecDrift & SDK Report');
+  lines.push('<!-- watay-contract-report -->');
+  lines.push('## 🪢 Watay Contract Guard & SDK Report');
   lines.push('');
   lines.push(
     '> 🛡️ **Zero-Data-Retention:** 100% client-side runner execution. No specifications, schemas or secrets were transferred to external servers.'
@@ -503,7 +503,7 @@ function buildMarkdownReport(params: {
         ? '✨'
         : '📦';
 
-    lines.push(`### ${bumpEmoji} Semantic SpecDrift Analysis`);
+    lines.push(`### ${bumpEmoji} Semantic Breaking-Change Analysis`);
     lines.push('');
     lines.push(`- **Suggested SemVer Bump:** \`${diff.suggestedBump.toUpperCase()}\``);
     lines.push(`- **Breaking Changes:** \`${diff.breaking.length}\``);
@@ -534,10 +534,10 @@ function buildMarkdownReport(params: {
       lines.push('');
     }
   } else if (baseIR) {
-    lines.push('### ℹ️ SpecDrift: No changes detected between base and head.');
+    lines.push('### ℹ️ Contract Guard: No changes detected between base and head.');
     lines.push('');
   } else {
-    lines.push('### ℹ️ SpecDrift: Initial specification detected (no base spec to compare against).');
+    lines.push('### ℹ️ Contract Guard: Initial specification detected (no base spec to compare against).');
     lines.push('');
   }
 
@@ -608,7 +608,7 @@ async function postOrUpdatePrComment(params: {
 
     if (listRes.ok) {
       const comments = (await listRes.json()) as Array<{ id: number; body?: string }>;
-      const existing = comments.find((c) => c.body?.includes('<!-- watay-specdrift-report -->'));
+      const existing = comments.find((c) => c.body?.includes('<!-- watay-contract-report -->'));
       if (existing) {
         existingCommentId = existing.id;
       }

@@ -1,6 +1,6 @@
 # nexus-ai-llm-gateway-sdk
 
-> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, SpecDrift-safe & contract-verified.
+> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, Contract-safe & contract-verified.
 
 Typed Python client for **NexusAI LLM Gateway** (API version `2.0.0`).
 Built with stdlib `dataclasses` + `urllib`, runtime contract validation, idempotent retries and typed errors.

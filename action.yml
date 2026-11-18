@@ -1,4 +1,4 @@
-name: 'Watay – Autonomous SDK Generation & SpecDrift Gatekeeper'
+name: 'Watay – Autonomous SDK Generation & Contract Guard'
 description: 'Autonomous Multi-Language SDK Generation, semantic OpenAPI breaking-change detection, and contract testing. 100% Client-Side with Zero-Data-Retention.'
 author: 'TestInc (watay.dev)'
 branding:
@@ -11,7 +11,7 @@ inputs:
     required: true
     default: 'openapi.json'
   base-spec-path:
-    description: 'Path to the baseline specification file to compare against for SpecDrift analysis.'
+    description: 'Path to the baseline specification file to compare against for Contract Guard analysis.'
     required: false
   base-ref:
     description: 'Git branch or ref to compare against (e.g. main) when base-spec-path is omitted.'
@@ -22,7 +22,7 @@ inputs:
     required: false
     default: 'true'
   post-comment:
-    description: 'Post an automated SpecDrift & SDK summary report as a comment on the pull request.'
+    description: 'Post an automated Contract Guard & SDK summary report as a comment on the pull request.'
     required: false
     default: 'true'
   languages:
@@ -46,7 +46,7 @@ outputs:
     description: 'Whether breaking changes were detected in the OpenAPI specification ("true" or "false").'
     value: ${{ steps.watay-runner.outputs.has-breaking }}
   suggested-bump:
-    description: 'Recommended SemVer bump based on SpecDrift analysis (major, minor, patch, or none).'
+    description: 'Recommended SemVer bump based on Contract Guard analysis (major, minor, patch, or none).'
     value: ${{ steps.watay-runner.outputs.suggested-bump }}
   breaking-count:
     description: 'Total number of breaking changes detected.'

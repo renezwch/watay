@@ -849,7 +849,7 @@ function genReadme(ir: WatayIR, pkgName: string, className: string, ops: OpModel
   return [
     '# ' + pkgName,
     '',
-    '> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, SpecDrift-safe & contract-verified.',
+    '> ⚡ Generated autonomously by [Watay](https://watay.dev) — Zero runtime dependencies, Contract-safe & contract-verified.',
     '',
     'Typed TypeScript client for **' + ir.title + '** (API version `' + ir.version + '`).',
     'Built with native `fetch`, runtime request/response schema validation, idempotent retries and typed errors.',

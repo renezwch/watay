@@ -101,13 +101,13 @@ async function checkCliLicense(key?: string): Promise<LicenseStatus> {
 }
 
 function helpText(): string {
-  return `Watay v${VERSION} — Autonomous SDK Generation, SpecDrift & Contract Testing (watay.dev)
+  return `Watay v${VERSION} — Autonomous SDK Generation, Contract Guard & Contract Testing (watay.dev)
 
 Usage:
   watay <command> [options]
 
 Commands:
-  diff <old> <new>        Semantic OpenAPI SpecDrift diff (breaking vs non-breaking)
+  diff <old> <new>        Semantic OpenAPI Contract Guard diff (breaking vs non-breaking)
     --old <path>          Old/base OpenAPI spec (alternative to positional <old>)
     --new <path>          New/head OpenAPI spec (alternative to positional <new>)
     --fail-on-breaking    Exit with code 1 if breaking changes are detected

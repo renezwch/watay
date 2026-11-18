@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Watay Showcase Builder — generates & verifies TypeScript + Python SDKs and
- * SpecDrift reports (v1 -> v2) for all 3 real-world showcase APIs.
+ * Contract Guard reports (v1 -> v2) for all 3 real-world showcase APIs.
  */
 import { mkdirSync, realpathSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -89,7 +89,7 @@ export async function buildShowcases(outRoot = GENERATED_DIR): Promise<ShowcaseB
 
     writeGeneratedFiles(join(apiOutDir, 'typescript'), tsHealed.output.files);
     writeGeneratedFiles(join(apiOutDir, 'python'), pyHealed.output.files);
-    writeFileSync(join(apiOutDir, 'SPECDRIFT_REPORT.md'), diff.markdown, 'utf8');
+    writeFileSync(join(apiOutDir, 'BREAKING_CHANGES.md'), diff.markdown, 'utf8');
 
     results.push({
       id: item.id,
@@ -122,7 +122,7 @@ if (isMain()) {
     const pyFiles = Object.keys(r.python.output.files).length;
     process.stdout.write(
       `[OK] ${r.id} (${r.label} v${r.v1.version} -> v${r.v2.version}): ` +
-        `SpecDrift ${r.diff.breaking.length} breaking / ${r.diff.nonBreaking.length} non-breaking (${r.diff.suggestedBump}) | ` +
+        `Contract Guard ${r.diff.breaking.length} breaking / ${r.diff.nonBreaking.length} non-breaking (${r.diff.suggestedBump}) | ` +
         `TS=${tsFiles} files, Python=${pyFiles} files\n`,
     );
   }
