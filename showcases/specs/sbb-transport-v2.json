@@ -1,0 +1,342 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SBB Swiss Public Transport API",
+    "version": "2.0.0",
+    "description": "v2 of the Swiss public transport timetable API with stricter UIC station codes, reduced query limits, and carbon footprint metrics."
+  },
+  "servers": [
+    {
+      "url": "https://transport.opendata.ch"
+    }
+  ],
+  "paths": {
+    "/v1/locations": {
+      "get": {
+        "operationId": "searchLocations",
+        "summary": "Search Swiss train stations and bus stops (POIs removed in v2)",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["station", "address"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching locations and stations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LocationsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/connections": {
+      "get": {
+        "operationId": "getConnections",
+        "summary": "Find next public transport connections between two Swiss locations",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "X-SBB-Client-Id",
+            "in": "header",
+            "required": true,
+            "description": "Mandatory client identifier added in v2",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10
+            }
+          },
+          {
+            "name": "direct",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "bike",
+            "in": "query",
+            "required": false,
+            "description": "Filter connections allowing bicycle transport",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Timetable connections between departure and arrival stations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/stationboard": {
+      "get": {
+        "operationId": "getStationboard",
+        "summary": "Live departure board (Abfahrtstafel) for a Swiss station",
+        "parameters": [
+          {
+            "name": "station",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station departure board entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StationboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Coordinates": {
+        "type": "object",
+        "required": ["type"],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "x": {
+            "type": ["number", "null"]
+          },
+          "y": {
+            "type": ["number", "null"]
+          }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "required": ["name"],
+        "properties": {
+          "id": {
+            "type": ["string", "null"]
+          },
+          "name": {
+            "type": ["string", "null"]
+          },
+          "coordinate": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "distance": {
+            "type": ["number", "null"]
+          },
+          "icon": {
+            "type": ["string", "null"]
+          }
+        }
+      },
+      "Prognosis": {
+        "type": "object",
+        "properties": {
+          "platform": {
+            "type": ["string", "null"]
+          },
+          "arrival": {
+            "type": ["string", "null"]
+          },
+          "departure": {
+            "type": ["string", "null"]
+          },
+          "capacity1st": {
+            "type": ["integer", "null"]
+          },
+          "capacity2nd": {
+            "type": ["integer", "null"]
+          }
+        }
+      },
+      "Checkpoint": {
+        "type": "object",
+        "required": ["station"],
+        "properties": {
+          "station": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "arrival": {
+            "type": ["string", "null"]
+          },
+          "arrivalTimestamp": {
+            "type": ["integer", "null"]
+          },
+          "departure": {
+            "type": ["string", "null"]
+          },
+          "departureTimestamp": {
+            "type": ["integer", "null"]
+          },
+          "delay": {
+            "type": ["integer", "null"]
+          },
+          "platform": {
+            "type": ["string", "null"]
+          },
+          "prognosis": {
+            "$ref": "#/components/schemas/Prognosis"
+          }
+        }
+      },
+      "Connection": {
+        "type": "object",
+        "required": ["from", "to"],
+        "properties": {
+          "from": {
+            "$ref": "#/components/schemas/Checkpoint"
+          },
+          "to": {
+            "$ref": "#/components/schemas/Checkpoint"
+          },
+          "duration": {
+            "type": ["string", "null"]
+          },
+          "transfers": {
+            "type": ["integer", "null"]
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "co2_grams": {
+            "type": ["number", "null"]
+          }
+        }
+      },
+      "StationboardJourney": {
+        "type": "object",
+        "required": ["name", "to", "stop"],
+        "properties": {
+          "stop": {
+            "$ref": "#/components/schemas/Checkpoint"
+          },
+          "name": {
+            "type": "string"
+          },
+          "category": {
+            "type": ["string", "null"]
+          },
+          "number": {
+            "type": ["string", "null"]
+          },
+          "operator": {
+            "type": ["string", "null"]
+          },
+          "to": {
+            "type": "string"
+          }
+        }
+      },
+      "LocationsResponse": {
+        "type": "object",
+        "required": ["stations"],
+        "properties": {
+          "stations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Location"
+            }
+          }
+        }
+      },
+      "ConnectionsResponse": {
+        "type": "object",
+        "required": ["connections"],
+        "properties": {
+          "connections": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Connection"
+            }
+          }
+        }
+      },
+      "StationboardResponse": {
+        "type": "object",
+        "required": ["station", "stationboard"],
+        "properties": {
+          "station": {
+            "$ref": "#/components/schemas/Location"
+          },
+          "stationboard": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StationboardJourney"
+            }
+          }
+        }
+      }
+    }
+  }
+}

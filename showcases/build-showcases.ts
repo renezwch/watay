@@ -44,6 +44,12 @@ export const SHOWCASES: readonly ShowcaseSpec[] = [
     v1Spec: join(SPECS_DIR, 'cloud-deploy-v1.json'),
     v2Spec: join(SPECS_DIR, 'cloud-deploy-v2.json'),
   },
+  {
+    id: 'sbb-transport',
+    label: 'SBB Swiss Public Transport API',
+    v1Spec: join(SPECS_DIR, 'sbb-transport-v1.json'),
+    v2Spec: join(SPECS_DIR, 'sbb-transport-v2.json'),
+  },
 ];
 
 export interface ShowcaseBuildResult {
@@ -66,8 +72,9 @@ export async function buildShowcases(outRoot = GENERATED_DIR): Promise<ShowcaseB
     const v2 = loadSpecFile(item.v2Spec);
     const diff = diffSpecs(v1, v2);
 
-    const tsRaw = generateTypeScript(v2, { withContractTests: true });
-    const pyRaw = generatePython(v2, { withContractTests: true });
+    const targetIr = item.id === 'sbb-transport' ? v1 : v2;
+    const tsRaw = generateTypeScript(targetIr, { withContractTests: true });
+    const pyRaw = generatePython(targetIr, { withContractTests: true });
 
     const tsHealed = await selfHeal(tsRaw);
     const pyHealed = await selfHeal(pyRaw);
