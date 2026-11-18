@@ -5,21 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Watay — Deterministic SDK Compiler &amp; Contract Verifier (watay.dev)</title>
   <meta name="description" content="Compile OpenAPI 3.0/3.1 specifications into zero-dependency TypeScript and Python SDKs with synthesized contract test servers. 100% client-side runner execution.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22 fill=%22none%22><rect width=%2232%22 height=%2232%22 fill=%22%230a0a0a%22/><rect x=%224%22 y=%229%22 width=%2214%22 height=%2214%22 stroke=%22%23ededed%22 stroke-width=%222.5%22/><rect x=%2214%22 y=%229%22 width=%2214%22 height=%2214%22 stroke=%22%23ededed%22 stroke-width=%222.5%22/><rect x=%2214%22 y=%2214%22 width=%224%22 height=%224%22 fill=%22%2322c55e%22/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22 fill=%22none%22><rect width=%2232%22 height=%2232%22 rx=%224%22 fill=%22%230a0a0a%22/><rect x=%224%22 y=%229%22 width=%2214%22 height=%2214%22 stroke=%22%23ededed%22 stroke-width=%222.5%22/><rect x=%2214%22 y=%229%22 width=%2214%22 height=%2214%22 stroke=%22%23ededed%22 stroke-width=%222.5%22/><rect x=%2214%22 y=%2214%22 width=%224%22 height=%224%22 fill=%22%2322c55e%22/></svg>">
   <style>
     :root {
-      --bg: #090909;
-      --bg-panel: #0e0e0e;
-      --bg-code: #060606;
-      --bg-hover: #141414;
-      --border: #222222;
-      --border-strong: #3a3a3a;
-      --text: #ededed;
-      --text-dim: #9a9a9a;
-      --text-muted: #636363;
+      --bg: #0a0a0a;
+      --bg-surface: #111111;
+      --bg-code: #0d0d0d;
+      --border: #242424;
+      --border-strong: #383838;
+      --text: #f0f0f0;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
       --green: #22c55e;
-      --amber: #eab308;
-      --red: #ef4444;
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
       --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Menlo', Consolas, monospace;
     }
@@ -30,48 +27,31 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: var(--font-sans);
-      line-height: 1.5;
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
-      font-size: 15px;
+      font-size: 16px;
     }
 
-    /* Swiss Technical Blueprint Frame */
-    .blueprint-frame {
-      max-width: 1220px;
+    .container {
+      max-width: 1040px;
       margin: 0 auto;
-      border-left: 1px solid var(--border);
-      border-right: 1px solid var(--border);
-      min-height: 100vh;
+      padding: 0 32px;
     }
 
-    /* Section Header Bar */
-    .spec-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 24px;
-      border-top: 1px solid var(--border);
+    /* Navigation */
+    header.topbar {
       border-bottom: 1px solid var(--border);
-      background: var(--bg-panel);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 10, 0.9);
+      backdrop-filter: blur(8px);
+      z-index: 20;
     }
-    .spec-bar strong {
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-
-    /* Top Navigation */
-    nav {
+    .nav-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
-      height: 58px;
-      padding: 0 24px;
+      height: 64px;
     }
     .brand {
       display: flex;
@@ -79,135 +59,157 @@
       gap: 12px;
       text-decoration: none;
       color: var(--text);
-      font-family: var(--font-mono);
       font-weight: 700;
-      font-size: 15px;
+      font-size: 17px;
       letter-spacing: -0.02em;
     }
-    .brand-version {
-      font-size: 11px;
-      color: var(--text-dim);
-      border: 1px solid var(--border-strong);
-      padding: 1px 6px;
+    .brand-domain {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
       font-weight: 400;
+      border: 1px solid var(--border);
+      padding: 2px 8px;
     }
     .nav-links {
       display: flex;
-      height: 100%;
       align-items: center;
+      gap: 32px;
     }
     .nav-links a {
-      color: var(--text-dim);
+      color: var(--text-secondary);
       text-decoration: none;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      padding: 0 18px;
-      border-left: 1px solid var(--border);
-      transition: background 0.12s, color 0.12s;
+      font-size: 14px;
+      transition: color 0.15s;
     }
     .nav-links a:hover {
-      background: var(--bg-hover);
       color: var(--text);
     }
-    .nav-links a.nav-cta {
+    .nav-links a.btn-gh {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      padding: 6px 14px;
+    }
+    .nav-links a.btn-gh:hover {
       background: var(--text);
       color: var(--bg);
-      font-weight: 600;
-    }
-    .nav-links a.nav-cta:hover {
-      background: #ffffff;
     }
 
-    /* Hero Split Grid */
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
+    /* Sections */
+    section {
+      padding: 96px 0;
       border-bottom: 1px solid var(--border);
     }
-    .hero-left {
-      padding: 56px 40px;
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+    .section-header {
+      margin-bottom: 48px;
+      max-width: 680px;
     }
-    .eyebrow {
+    .section-kicker {
       font-family: var(--font-mono);
       font-size: 12px;
-      color: var(--text-dim);
-      margin-bottom: 20px;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .section-header h2 {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .section-header p {
+      color: var(--text-secondary);
+      font-size: 16.5px;
+      line-height: 1.6;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 96px 0 88px;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-meta {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .status-dot {
-      width: 7px;
-      height: 7px;
+    .dot-live {
+      width: 8px;
+      height: 8px;
       background: var(--green);
       display: inline-block;
     }
-    h1 {
-      font-size: 40px;
+    .hero h1 {
+      font-size: 48px;
       font-weight: 700;
       letter-spacing: -0.035em;
       line-height: 1.12;
-      color: var(--text);
-      margin-bottom: 22px;
-    }
-    .hero-lead {
-      font-size: 16px;
-      color: var(--text-dim);
-      line-height: 1.65;
-      max-width: 560px;
-      margin-bottom: 32px;
-    }
-    .hero-lead code {
-      font-family: var(--font-mono);
-      font-size: 13.5px;
-      color: var(--text);
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      padding: 1px 5px;
-    }
-
-    /* CLI Command Box */
-    .cli-box {
-      display: flex;
-      align-items: stretch;
-      border: 1px solid var(--border-strong);
-      background: var(--bg-code);
+      max-width: 780px;
       margin-bottom: 24px;
     }
+    .hero-lead {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 680px;
+      line-height: 1.65;
+      margin-bottom: 40px;
+    }
+    .hero-lead strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* CLI Bar + Actions */
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 16px;
+      margin-bottom: 56px;
+    }
+    .cli-box {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      flex: 1;
+      max-width: 640px;
+      min-width: 300px;
+    }
     .cli-prompt {
-      padding: 13px 14px;
+      padding: 14px 16px;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-muted);
-      border-right: 1px solid var(--border);
       user-select: none;
     }
     .cli-cmd {
-      padding: 13px 16px;
       font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text);
       flex: 1;
       overflow-x: auto;
       white-space: nowrap;
+      padding-right: 12px;
     }
     .cli-copy {
-      background: var(--bg-panel);
+      height: 100%;
+      background: transparent;
       border: none;
       border-left: 1px solid var(--border);
-      color: var(--text-dim);
+      color: var(--text-secondary);
       font-family: var(--font-mono);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 0 18px;
+      font-size: 12px;
+      padding: 0 20px;
       cursor: pointer;
     }
     .cli-copy:hover {
@@ -215,167 +217,171 @@
       color: var(--bg);
     }
 
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-    }
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-      font-weight: 600;
-      text-decoration: none;
-      padding: 11px 20px;
-      border: 1px solid var(--border-strong);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.12s;
-    }
-    .btn-solid {
+    .btn-primary {
       background: var(--text);
       color: var(--bg);
-      border-color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 14px 24px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--text);
     }
-    .btn-solid:hover {
+    .btn-primary:hover {
       background: #ffffff;
     }
-    .btn-outline {
-      background: transparent;
-      color: var(--text);
-    }
-    .btn-outline:hover {
-      background: var(--bg-hover);
-      border-color: var(--text-dim);
-    }
 
-    /* Hero Right: Technical Datasheet */
-    .hero-right {
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-code);
+    /* 4 Key Specs Strip */
+    .specs-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
     }
-    .datasheet-title {
-      padding: 12px 20px;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-      background: var(--bg-panel);
-    }
-    .datasheet-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
-    }
-    .datasheet-table tr {
-      border-bottom: 1px solid var(--border);
-    }
-    .datasheet-table th {
-      text-align: left;
-      padding: 11px 20px;
-      color: var(--text-muted);
-      font-weight: 400;
-      width: 42%;
+    .spec-item {
+      padding: 20px 24px;
       border-right: 1px solid var(--border);
     }
-    .datasheet-table td {
-      padding: 11px 20px;
-      color: var(--text);
+    .spec-item:last-child {
+      border-right: none;
     }
-    .pipeline-diagram {
-      padding: 20px;
+    .spec-label {
       font-family: var(--font-mono);
-      font-size: 11.5px;
-      line-height: 1.55;
-      color: var(--text-dim);
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    /* Section Header Block */
-    .section-head {
-      padding: 36px 40px 28px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 24px;
-    }
-    .section-head h2 {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.025em;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
       margin-bottom: 6px;
     }
-    .section-head p {
-      color: var(--text-dim);
-      font-size: 14.5px;
-      max-width: 640px;
-    }
-    .section-meta {
+    .spec-value {
       font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
-      white-space: nowrap;
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
     }
 
-    /* Interactive Showcase Workbench */
-    .workbench-selector {
+    /* Section 1: Verification Guarantee */
+    .verify-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .verify-list {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    .verify-item {
+      display: grid;
+      grid-template-columns: 36px 1fr;
+      gap: 14px;
+    }
+    .verify-num {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 600;
+      padding-top: 3px;
+    }
+    .verify-item h3 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .verify-item p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .verify-item code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--bg-surface);
+      padding: 1px 6px;
+      border: 1px solid var(--border);
+    }
+
+    .terminal-panel {
+      border: 1px solid var(--border-strong);
+      background: var(--bg-code);
+    }
+    .terminal-top {
+      padding: 12px 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+    }
+    .terminal-body {
+      padding: 24px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.75;
+      overflow-x: auto;
+    }
+    pre { margin: 0; color: #d4d4d4; }
+    .ok { color: var(--green); font-weight: 600; }
+    .kw { color: #ffffff; font-weight: 600; }
+    .fn { color: #e5e5e5; }
+    .str { color: #86efac; }
+    .cmt { color: #6e6e6e; }
+    .typ { color: #fde047; }
+    .tag { color: #f87171; }
+
+    /* Section 2: Interactive Code Workbench */
+    .workbench-box {
+      border: 1px solid var(--border-strong);
+      background: var(--bg-code);
+    }
+    .api-picker {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
     }
     .showcase-tab {
       padding: 18px 24px;
-      background: var(--bg);
       border-right: 1px solid var(--border);
       cursor: pointer;
-      transition: background 0.12s;
+      transition: background 0.15s;
     }
     .showcase-tab:last-child {
       border-right: none;
     }
     .showcase-tab:hover {
-      background: var(--bg-hover);
+      background: #171717;
     }
     .showcase-tab.active {
-      background: var(--bg-panel);
-      box-shadow: inset 0 2px 0 var(--text);
-    }
-    .showcase-tab-id {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .showcase-tab.active .showcase-tab-id {
-      color: var(--green);
+      background: var(--bg-code);
+      box-shadow: inset 0 2px 0 var(--green);
     }
     .showcase-tab-title {
       font-family: var(--font-mono);
-      font-weight: 700;
       font-size: 14px;
+      font-weight: 600;
       color: var(--text);
-      margin-bottom: 3px;
+      margin-bottom: 4px;
     }
     .showcase-tab-desc {
-      font-size: 12.5px;
-      color: var(--text-dim);
+      font-size: 13px;
+      color: var(--text-secondary);
     }
 
-    .workbench-bar {
+    .file-tabs-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--bg-panel);
       border-bottom: 1px solid var(--border);
-      padding: 0 16px 0 0;
+      background: #0f0f0f;
+      padding-right: 16px;
     }
     .tabs {
       display: flex;
@@ -384,474 +390,387 @@
       background: transparent;
       border: none;
       border-right: 1px solid var(--border);
-      color: var(--text-dim);
+      color: var(--text-secondary);
       font-family: var(--font-mono);
-      font-size: 12px;
-      padding: 11px 20px;
+      font-size: 12.5px;
+      padding: 12px 22px;
       cursor: pointer;
     }
     .tab-btn:hover {
       color: var(--text);
-      background: var(--bg-hover);
     }
     .tab-btn.active {
-      background: var(--bg-code);
       color: var(--text);
+      background: var(--bg-code);
       font-weight: 600;
-      box-shadow: inset 0 -2px 0 var(--green);
+      box-shadow: inset 0 -2px 0 var(--text);
     }
     .btn-copy-small {
       background: transparent;
-      border: 1px solid var(--border-strong);
-      color: var(--text-dim);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
       font-family: var(--font-mono);
       font-size: 11px;
-      padding: 4px 10px;
+      padding: 5px 12px;
       cursor: pointer;
-      text-transform: uppercase;
     }
     .btn-copy-small:hover {
-      background: var(--text);
-      color: var(--bg);
+      border-color: var(--text);
+      color: var(--text);
     }
-
     .code-container {
-      background: var(--bg-code);
       padding: 28px 32px;
       font-family: var(--font-mono);
-      font-size: 13px;
-      line-height: 1.65;
-      overflow-x: auto;
-      min-height: 360px;
-      border-bottom: 1px solid var(--border);
-    }
-    pre { margin: 0; color: #d4d4d4; }
-    .kw { color: #ffffff; font-weight: 600; }
-    .fn { color: #e5e5e5; text-decoration: underline; text-decoration-color: #444; text-underline-offset: 3px; }
-    .str { color: #86efac; }
-    .cmt { color: #686868; }
-    .typ { color: #fde047; }
-    .tag { color: #f87171; }
-
-    /* Verification Guarantee 2-Column Split */
-    .verify-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid var(--border);
-    }
-    .verify-steps {
-      border-right: 1px solid var(--border);
-    }
-    .verify-row {
-      padding: 24px 32px;
-      border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 52px 1fr;
-      gap: 12px;
-    }
-    .verify-row:last-child {
-      border-bottom: none;
-    }
-    .verify-idx {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--green);
-      font-weight: 600;
-      padding-top: 2px;
-    }
-    .verify-row h3 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-    .verify-row p {
       font-size: 13.5px;
-      color: var(--text-dim);
-      line-height: 1.55;
-    }
-    .verify-row code {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text);
-      background: var(--bg-panel);
-      padding: 1px 5px;
-      border: 1px solid var(--border);
-    }
-    .verify-log {
-      background: var(--bg-code);
-      display: flex;
-      flex-direction: column;
-    }
-    .verify-log-head {
-      padding: 10px 20px;
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-dim);
-      display: flex;
-      justify-content: space-between;
-    }
-    .verify-log-body {
-      padding: 24px 28px;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
       line-height: 1.7;
       overflow-x: auto;
-      flex: 1;
+      min-height: 340px;
     }
-    .ok { color: var(--green); font-weight: 600; }
 
-    /* Engineering Comparison Matrix */
-    .matrix-wrap {
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-    }
-    .matrix-table {
+    /* Section 3: Comparison Table */
+    .compare-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
+      border: 1px solid var(--border);
+      font-size: 14.5px;
     }
-    .matrix-table th,
-    .matrix-table td {
-      padding: 14px 24px;
+    .compare-table th,
+    .compare-table td {
+      padding: 16px 24px;
       border-bottom: 1px solid var(--border);
       border-right: 1px solid var(--border);
       text-align: left;
     }
-    .matrix-table th:last-child,
-    .matrix-table td:last-child {
+    .compare-table th:last-child,
+    .compare-table td:last-child {
       border-right: none;
     }
-    .matrix-table thead th {
-      background: var(--bg-panel);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-dim);
-      font-weight: 600;
-    }
-    .matrix-table tbody th {
-      font-family: var(--font-mono);
-      font-weight: 500;
-      color: var(--text);
-      background: var(--bg);
-      width: 28%;
-    }
-    .matrix-table td {
-      color: var(--text-dim);
+    .compare-table thead th {
+      background: var(--bg-surface);
       font-family: var(--font-mono);
       font-size: 12.5px;
+      color: var(--text-secondary);
+      font-weight: 600;
     }
-    .matrix-table td.col-watay {
+    .compare-table tbody th {
+      font-weight: 500;
       color: var(--text);
+      width: 26%;
+    }
+    .compare-table td {
+      color: var(--text-secondary);
+    }
+    .compare-table td.highlight {
+      color: var(--text);
+      font-weight: 600;
       background: rgba(34, 197, 94, 0.04);
-      font-weight: 600;
     }
 
-    /* 6-Cell Technical Capabilities Grid */
-    .cap-grid {
+    /* Section 4: Pricing */
+    .pricing-cards {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      border-bottom: 1px solid var(--border);
+      gap: 24px;
     }
-    .cap-cell {
-      padding: 28px 32px;
-      border-right: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .cap-cell:nth-child(3n) {
-      border-right: none;
-    }
-    .cap-cell:nth-child(n+4) {
-      border-bottom: none;
-    }
-    .cap-code {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
-      display: block;
-    }
-    .cap-cell h3 {
-      font-size: 15.5px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-    .cap-cell p {
-      font-size: 13.5px;
-      color: var(--text-dim);
-      line-height: 1.55;
-    }
-
-    /* Pricing 3-Column Technical Grid */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-bottom: 1px solid var(--border);
-    }
-    .price-col {
+    .price-card {
+      border: 1px solid var(--border);
+      background: var(--bg-surface);
       padding: 36px 32px;
-      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
-    .price-col:last-child {
-      border-right: none;
-    }
-    .price-col.pro-col {
-      background: var(--bg-panel);
+    .price-card.featured {
+      border-color: var(--text);
     }
     .price-tier {
       font-family: var(--font-mono);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-dim);
-      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .tier-tag {
+    .badge-rec {
+      font-size: 11px;
       background: var(--text);
       color: var(--bg);
-      padding: 1px 6px;
-      font-size: 10px;
-      font-weight: 700;
+      padding: 2px 8px;
     }
-    .price-amount {
+    .price-val {
       font-family: var(--font-mono);
-      font-size: 36px;
+      font-size: 38px;
       font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
       letter-spacing: -0.03em;
+      margin-bottom: 10px;
     }
-    .price-amount span {
-      font-size: 13px;
+    .price-val span {
+      font-size: 14px;
       color: var(--text-muted);
       font-weight: 400;
     }
     .price-desc {
-      font-size: 13.5px;
-      color: var(--text-dim);
-      margin-bottom: 24px;
-      padding-bottom: 20px;
+      font-size: 14.5px;
+      color: var(--text-secondary);
+      margin-bottom: 28px;
+      padding-bottom: 24px;
       border-bottom: 1px solid var(--border);
     }
     .price-list {
       list-style: none;
-      margin-bottom: 32px;
-      font-family: var(--font-mono);
-      font-size: 12.5px;
+      margin-bottom: 36px;
+      font-size: 14.5px;
     }
     .price-list li {
-      margin-bottom: 11px;
-      color: var(--text-dim);
+      margin-bottom: 12px;
+      color: var(--text-secondary);
       display: flex;
       gap: 10px;
     }
     .price-list li::before {
-      content: "+";
+      content: "✓";
       color: var(--green);
+      font-family: var(--font-mono);
       font-weight: 700;
+    }
+    .btn-block {
+      display: block;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      padding: 13px 20px;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .btn-block:hover {
+      border-color: var(--text);
+      background: #1a1a1a;
+    }
+    .btn-block.solid {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+    .btn-block.solid:hover {
+      background: #ffffff;
     }
 
     /* Footer */
     footer {
-      padding: 28px 40px;
+      padding: 48px 0;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: var(--text-muted);
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-muted);
+      flex-wrap: wrap;
+      gap: 16px;
     }
     footer a {
-      color: var(--text-dim);
+      color: var(--text-secondary);
       text-decoration: none;
     }
     footer a:hover {
       color: var(--text);
     }
 
-    @media (max-width: 920px) {
-      .hero-grid,
-      .workbench-selector,
-      .verify-split,
-      .cap-grid,
-      .pricing-grid {
-        grid-template-columns: 1fr;
-      }
-      .hero-left,
-      .showcase-tab,
-      .verify-steps,
-      .cap-cell,
-      .price-col {
-        border-right: none;
-      }
-      .showcase-tab,
-      .cap-cell,
-      .price-col {
-        border-bottom: 1px solid var(--border);
-      }
-      .nav-links {
-        display: none;
-      }
+    @media (max-width: 860px) {
+      .hero h1 { font-size: 36px; }
+      .specs-strip { grid-template-columns: 1fr 1fr; }
+      .spec-item { border-bottom: 1px solid var(--border); }
+      .verify-layout,
+      .api-picker,
+      .pricing-cards { grid-template-columns: 1fr; }
+      .showcase-tab { border-right: none; border-bottom: 1px solid var(--border); }
+      .nav-links { display: none; }
     }
   </style>
 </head>
 <body>
-  <div class="blueprint-frame">
-    <!-- Top Spec Metadata Bar -->
-    <div class="spec-bar">
-      <span><strong>WATAY.DEV</strong> // DETERMINISTIC OPENAPI 3.0/3.1 COMPILER &amp; CONTRACT VERIFIER</span>
-      <span>RUNTIME: NODE &gt;=22 / PYTHON &gt;=3.10 // ZERO EXTERNAL DEPS</span>
-    </div>
 
-    <!-- Navigation -->
-    <nav>
+  <!-- Top Navigation -->
+  <header class="topbar">
+    <div class="container nav-inner">
       <a href="#" class="brand">
-        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Watay Knot Symbol">
-          <rect x="3" y="8" width="15" height="15" stroke="#ededed" stroke-width="2.5"/>
-          <rect x="14" y="8" width="15" height="15" stroke="#ededed" stroke-width="2.5"/>
+        <svg width="22" height="22" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Watay Logo">
+          <rect x="3" y="8" width="15" height="15" stroke="#f0f0f0" stroke-width="2.5"/>
+          <rect x="14" y="8" width="15" height="15" stroke="#f0f0f0" stroke-width="2.5"/>
           <rect x="14" y="13.5" width="4" height="4" fill="#22c55e"/>
         </svg>
-        WATAY
-        <span class="brand-version">v0.1.0-MIT</span>
+        Watay
+        <span class="brand-domain">watay.dev</span>
       </a>
-      <div class="nav-links">
-        <a href="#workbench">01_WORKBENCH</a>
-        <a href="#verification">02_VERIFICATION</a>
-        <a href="#comparison">03_BENCHMARK</a>
-        <a href="#architecture">04_ARCHITECTURE</a>
-        <a href="#pricing">05_LICENSING</a>
-        <a href="https://github.com/testinc/watay" class="nav-cta" target="_blank" rel="noopener">GITHUB_REPO &#8599;</a>
-      </div>
-    </nav>
+      <nav class="nav-links">
+        <a href="#verification">Verification</a>
+        <a href="#showcases">Code Examples</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://github.com/testinc/watay" class="btn-gh" target="_blank" rel="noopener">GitHub</a>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Hero Split Section -->
-    <section class="hero-grid">
-      <div class="hero-left">
-        <div>
-          <div class="eyebrow">
-            <span class="status-dot"></span>
-            <span>CLIENT-SIDE EXECUTION // ZERO DATA RETENTION</span>
-          </div>
-          <h1>Compile OpenAPI specs into contract-tested SDKs.</h1>
-          <p class="hero-lead">
-            <strong>Watay</strong> (Quechua: <em>to bind / link together</em>) is a deterministic SDK compiler and semantic breaking-change gate. It compiles OpenAPI 3.0 &amp; 3.1 into dependency-free <code>TypeScript</code> and <code>Python</code> clients and verifies every endpoint against an ephemeral HTTP server before emitting files.
-          </p>
-        </div>
-
-        <div>
-          <div class="cli-box">
-            <span class="cli-prompt">$</span>
-            <span class="cli-cmd" id="cmd-text">npx watay generate openapi.json --lang ts,python --verify --heal</span>
-            <button class="cli-copy" onclick="copyCommand(this)">Copy</button>
-          </div>
-
-          <div class="hero-actions">
-            <a href="#workbench" class="btn btn-solid">INSPECT GENERATED CODE &#8595;</a>
-            <a href="#verification" class="btn btn-outline">HOW VERIFICATION WORKS</a>
-          </div>
-        </div>
+  <main class="container">
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-meta">
+        <span class="dot-live"></span>
+        <span>100% Client-Side CLI &amp; GitHub Action · Zero Data Retention</span>
       </div>
 
-      <div class="hero-right">
-        <div class="datasheet-title">
-          <span>TECHNICAL DATASHEET</span>
-          <span>SPEC_REV: 2026.11</span>
+      <h1>Compile OpenAPI specs into contract-tested SDKs.</h1>
+
+      <p class="hero-lead">
+        <strong>Watay</strong> (Quechua for <em>"to bind together"</em>) compiles OpenAPI 3.0 &amp; 3.1 into dependency-free TypeScript and Python SDKs—and tests every endpoint against a local HTTP server before emitting a single file.
+      </p>
+
+      <div class="hero-cta-row">
+        <div class="cli-box">
+          <span class="cli-prompt">$</span>
+          <span class="cli-cmd" id="cmd-text">npx watay generate openapi.json --lang ts,python --verify</span>
+          <button class="cli-copy" onclick="copyCommand(this)">Copy</button>
         </div>
-        <table class="datasheet-table">
-          <tbody>
-            <tr>
-              <th>INPUT_FORMATS</th>
-              <td>OpenAPI 3.0.x, OpenAPI 3.1.x (JSON &amp; YAML)</td>
-            </tr>
-            <tr>
-              <th>TS_OUTPUT</th>
-              <td>Native <code>fetch</code> + runtime schema guard (0 npm deps)</td>
-            </tr>
-            <tr>
-              <th>PYTHON_OUTPUT</th>
-              <td>Stdlib <code>dataclasses</code> + <code>urllib</code> (0 PyPI deps)</td>
-            </tr>
-            <tr>
-              <th>CONTRACT_PROOF</th>
-              <td>Synthesized local HTTP server + <code>node:test</code> / <code>unittest</code></td>
-            </tr>
-            <tr>
-              <th>DIFF_SEMANTICS</th>
-              <td>Contravariant requests / Covariant responses</td>
-            </tr>
-            <tr>
-              <th>DATA_RETENTION</th>
-              <td>0 bytes (runs inside customer GitHub Actions runner)</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="pipeline-diagram">
-<pre>
-[openapi.yaml] ──► [WatayIR Parser] ──► [Deterministic AST Codegen]
-                                                │
-       ┌────────────────────────────────────────┘
-       ▼
-[Ephemeral HTTP Mock] ◄──► [TS &amp; Python Contract Suites] ──► [EMIT SDK]
-</pre>
+        <a href="#showcases" class="btn-primary">Inspect Generated SDKs</a>
+      </div>
+
+      <div class="specs-strip">
+        <div class="spec-item">
+          <div class="spec-label">Targets</div>
+          <div class="spec-value">TypeScript &amp; Python 3.10+</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Runtime Dependencies</div>
+          <div class="spec-value">0 (Native fetch &amp; urllib)</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Verification</div>
+          <div class="spec-value">Live HTTP Mock Roundtrip</div>
+        </div>
+        <div class="spec-item">
+          <div class="spec-label">Data Retention</div>
+          <div class="spec-value">0 Bytes (Runs in your CI)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 1: Verification Guarantee -->
+    <section id="verification">
+      <div class="section-header">
+        <span class="section-kicker">01 · Verification Guarantee</span>
+        <h2>How do you know the generated code actually works?</h2>
+        <p>
+          Most generators hand you untested template files and hope they compile. Watay only finishes a build after proving every generated method over real HTTP.
+        </p>
+      </div>
+
+      <div class="verify-layout">
+        <div class="verify-list">
+          <div class="verify-item">
+            <div class="verify-num">01</div>
+            <div>
+              <h3>Live HTTP roundtrip before emit</h3>
+              <p>During generation, Watay boots a local HTTP contract server from your OpenAPI spec and calls every generated TypeScript and Python method—testing auth headers, path parameters, and retries.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">02</div>
+            <div>
+              <h3>Shipped with runnable tests you own</h3>
+              <p>Every generated SDK includes a standalone <code>tests/</code> folder using built-in <code>node:test</code> and Python <code>unittest</code>. Run them yourself in 1 second without installing test frameworks.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">03</div>
+            <div>
+              <h3>Runtime payload guards in production</h3>
+              <p>Static types disappear at runtime. Watay embeds schema guards directly into the client so if your backend ever drops a required field, you get a clear <code>ValidationError($.data[0].amount)</code>.</p>
+            </div>
+          </div>
+
+          <div class="verify-item">
+            <div class="verify-num">04</div>
+            <div>
+              <h3>100% deterministic output</h3>
+              <p>No AI lottery. The same OpenAPI file always produces byte-for-byte identical code, giving you clean 5-line <code>git diff</code> pull requests whenever an endpoint changes.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-panel">
+          <div class="terminal-top">
+            <span>Terminal — watay verify</span>
+            <span>exit code 0</span>
+          </div>
+          <div class="terminal-body">
+<pre><code><span class="cmt">$ npx watay generate openapi.json --lang ts,python --verify</span>
+
+Parsed "Aurelia FinTech Ledger" v1.0.0 (6 operations, 10 schemas)
+
+<span class="ok">✔ [1/4] Determinism &amp; Path Guard</span>    Byte-identical output
+<span class="ok">✔ [2/4] Syntax &amp; Compiler Check</span>     TS &amp; Python 3.10+ clean
+<span class="ok">✔ [3/4] TypeScript Contract Suite</span>   node --test (9/9 passed)
+  <span class="ok">✔</span> GET /v1/accounts (listAccounts) roundtrip &amp; schema
+  <span class="ok">✔</span> POST /v1/transfers (createTransfer) Idempotency-Key &amp; 201
+  <span class="ok">✔</span> Retries idempotent GET on transient HTTP 503
+  <span class="ok">✔</span> Rejects malformed payloads with ValidationError
+
+<span class="ok">✔ [4/4] Python Contract Suite</span>       unittest (9/9 passed)
+  <span class="ok">✔</span> test_all_operations_roundtrip_and_dataclass_mapping
+  <span class="ok">✔</span> test_bearer_and_api_key_header_injection
+  <span class="ok">✔</span> test_runtime_validator_catches_contract_drift
+
+<span class="ok">Done:</span> 18/18 contract assertions passed (0 failed).</code></pre>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 01: Live Code Workbench -->
-    <div class="spec-bar" id="workbench">
-      <span><strong>SECTION 01</strong> // AUTONOMOUSLY COMPILED REFERENCE SHOWCASES</span>
-      <span>3 ENTERPRISE SPECS · 6 VERIFIED SDKS · 52/52 CONTRACT ASSERTIONS PASSED</span>
-    </div>
-
-    <section>
-      <div class="section-head">
-        <div>
-          <h2>Inspect Real Compiler Output</h2>
-          <p>Unedited TypeScript clients, Python stdlib clients, and directional breaking-change diffs compiled directly from production-grade OpenAPI 3.1 specifications.</p>
-        </div>
-        <div class="section-meta">SOURCE: products/watay/showcases/generated/</div>
+    <!-- Section 2: Code Examples / Workbench -->
+    <section id="showcases">
+      <div class="section-header">
+        <span class="section-kicker">02 · Live Compiler Output</span>
+        <h2>Inspect real generated SDKs &amp; breaking-change diffs</h2>
+        <p>
+          Switch between three production OpenAPI 3.1 specifications to see the exact TypeScript client, Python client, and Contract Guard diff report generated by Watay.
+        </p>
       </div>
 
-      <div class="workbench-selector">
-        <div class="showcase-tab active" id="tab-api-llm" onclick="selectShowcase('llm', this)">
-          <div class="showcase-tab-id"><span>SPEC_01</span><span>8/8 TESTS PASS</span></div>
-          <div class="showcase-tab-title">nexus-ai-llm-gateway</div>
-          <div class="showcase-tab-desc">Bearer auth, union schemas, nullable streams, rate-limit headers</div>
+      <div class="workbench-box">
+        <div class="api-picker">
+          <div class="showcase-tab active" id="tab-api-llm" onclick="selectShowcase('llm', this)">
+            <div class="showcase-tab-title">1. NexusAI LLM Gateway</div>
+            <div class="showcase-tab-desc">Bearer auth, union schemas, rate limits</div>
+          </div>
+          <div class="showcase-tab" id="tab-api-fintech" onclick="selectShowcase('fintech', this)">
+            <div class="showcase-tab-title">2. Aurelia FinTech Ledger</div>
+            <div class="showcase-tab-desc">Idempotency keys, dual auth, pagination</div>
+          </div>
+          <div class="showcase-tab" id="tab-api-cloud" onclick="selectShowcase('cloud', this)">
+            <div class="showcase-tab-title">3. Stratos Cloud Deploy</div>
+            <div class="showcase-tab-desc">Nested container configs, rollbacks</div>
+          </div>
         </div>
-        <div class="showcase-tab" id="tab-api-fintech" onclick="selectShowcase('fintech', this)">
-          <div class="showcase-tab-id"><span>SPEC_02</span><span>9/9 TESTS PASS</span></div>
-          <div class="showcase-tab-title">aurelia-fintech-ledger</div>
-          <div class="showcase-tab-desc">Dual Bearer + API-Key auth, idempotency headers, cursor pagination</div>
-        </div>
-        <div class="showcase-tab" id="tab-api-cloud" onclick="selectShowcase('cloud', this)">
-          <div class="showcase-tab-id"><span>SPEC_03</span><span>9/9 TESTS PASS</span></div>
-          <div class="showcase-tab-title">stratos-cloud-deploy</div>
-          <div class="showcase-tab-desc">Nested container runtime configs, map dictionaries, rollback mutations</div>
-        </div>
-      </div>
 
-      <div class="workbench-bar">
-        <div class="tabs">
-          <button class="tab-btn active" id="subtab-ts" onclick="selectSubTab('ts', this)">client.ts (TypeScript)</button>
-          <button class="tab-btn" id="subtab-py" onclick="selectSubTab('py', this)">client.py (Python 3.10+)</button>
-          <button class="tab-btn" id="subtab-diff" onclick="selectSubTab('diff', this)">BREAKING_CHANGES.md (v1 &#8594; v2)</button>
+        <div class="file-tabs-bar">
+          <div class="tabs">
+            <button class="tab-btn active" id="subtab-ts" onclick="selectSubTab('ts', this)">TypeScript SDK</button>
+            <button class="tab-btn" id="subtab-py" onclick="selectSubTab('py', this)">Python SDK</button>
+            <button class="tab-btn" id="subtab-diff" onclick="selectSubTab('diff', this)">Breaking-Change Diff (v1 &#8594; v2)</button>
+          </div>
+          <button class="btn-copy-small" onclick="copySnippet(this)">Copy Code</button>
         </div>
-        <button class="btn-copy-small" onclick="copySnippet(this)">Copy Buffer</button>
-      </div>
 
-      <div class="code-container">
-        <!-- LLM Gateway Content -->
-        <div id="box-llm">
-          <pre id="llm-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
+        <div class="code-container">
+          <!-- LLM Gateway Content -->
+          <div id="box-llm">
+            <pre id="llm-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
 <span class="kw">import</span> { <span class="typ">NexusAiLlmGatewayClient</span> } <span class="kw">from</span> <span class="str">'@org/nexus-ai-llm-gateway-sdk'</span>;
 <span class="kw">import</span> <span class="kw">type</span> { <span class="typ">ChatCompletionResponse</span> } <span class="kw">from</span> <span class="str">'@org/nexus-ai-llm-gateway-sdk'</span>;
 
@@ -860,7 +779,6 @@
   bearerToken: process.env.<span class="typ">NEXUS_API_KEY</span>
 });
 
-<span class="cmt">// Validated request + runtime response schema verification</span>
 <span class="kw">const</span> completion: <span class="typ">ChatCompletionResponse</span> = <span class="kw">await</span> client.<span class="fn">createChatCompletion</span>({
   <span class="str">'X-Tenant-Id'</span>: <span class="str">'tenant_enterprise_01'</span>,
   body: {
@@ -871,7 +789,7 @@
 });
 console.<span class="fn">log</span>(completion.choices[0].message.content);</code></pre>
 
-          <pre id="llm-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
+            <pre id="llm-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
 <span class="kw">from</span> nexus_ai_llm_gateway_sdk <span class="kw">import</span> <span class="typ">NexusAiLlmGatewayClient</span>
 
 client = <span class="typ">NexusAiLlmGatewayClient</span>(
@@ -889,28 +807,27 @@ completion = client.<span class="fn">create_chat_completion</span>(
 )
 print(completion.choices[0].message.content)</code></pre>
 
-          <pre id="llm-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/llm-gateway-v1.json specs/llm-gateway-v2.json --fail-on-breaking</span>
-<span class="tag">## Watay Breaking-Change Report: NexusAI LLM Gateway 1.0.0 → 2.0.0</span>
-<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9 · Info: 9</span>
+            <pre id="llm-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/llm-gateway-v1.json specs/llm-gateway-v2.json --fail-on-breaking</span>
+<span class="tag">Watay Breaking-Change Report: NexusAI LLM Gateway 1.0.0 → 2.0.0</span>
+<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9</span>
 
 <span class="typ">BREAKING CHANGES (7)</span>
-[BREAKING] operation-removed            DELETE /v1/batches/{batchId}
-[BREAKING] required-param-added         POST /v1/chat/completions &gt; header:X-Tenant-Id
-[BREAKING] request-enum-value-removed   POST /v1/chat/completions &gt; ChatCompletionRequest.model ("gpt-3.5-turbo")
-[BREAKING] request-maximum-tightened    POST /v1/chat/completions &gt; ChatCompletionRequest.temperature (2.0 -&gt; 1.0)
-[BREAKING] response-became-nullable     POST /v1/chat/completions &gt; choices[].message.content
-[BREAKING] response-property-removed    GET /v1/models &gt; ModelList.models[].max_output_tokens
-[BREAKING] response-property-removed    GET /v1/models/{modelId} &gt; ModelInfo.max_output_tokens
+- [operation-removed]          DELETE /v1/batches/{batchId}
+- [required-param-added]       POST /v1/chat/completions &gt; header:X-Tenant-Id
+- [request-enum-value-removed] POST /v1/chat/completions &gt; model ("gpt-3.5-turbo" removed)
+- [request-maximum-tightened]  POST /v1/chat/completions &gt; temperature (2.0 -&gt; 1.0)
+- [response-became-nullable]   POST /v1/chat/completions &gt; choices[].message.content
+- [response-property-removed]  GET /v1/models &gt; models[].max_output_tokens
 
 <span class="str">NON-BREAKING ADDITIONS (9)</span>
-[SAFE]     operation-added              POST /v1/moderations (moderateContent)
-[SAFE]     request-enum-value-added     POST /v1/chat/completions &gt; model ("gemini-4-hydrogen")
-[SAFE]     response-property-added      POST /v1/chat/completions &gt; usage.cached_tokens</code></pre>
-        </div>
++ [operation-added]            POST /v1/moderations (moderateContent)
++ [request-enum-value-added]   POST /v1/chat/completions &gt; model ("gemini-4-hydrogen")
++ [response-property-added]    POST /v1/chat/completions &gt; usage.cached_tokens</code></pre>
+          </div>
 
-        <!-- FinTech Ledger Content -->
-        <div id="box-fintech" style="display: none;">
-          <pre id="fintech-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
+          <!-- FinTech Ledger Content -->
+          <div id="box-fintech" style="display: none;">
+            <pre id="fintech-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
 <span class="kw">import</span> { <span class="typ">AureliaFinTechLedgerClient</span> } <span class="kw">from</span> <span class="str">'@org/aurelia-fin-tech-ledger-sdk'</span>;
 <span class="kw">import</span> <span class="kw">type</span> { <span class="typ">Transfer</span> } <span class="kw">from</span> <span class="str">'@org/aurelia-fin-tech-ledger-sdk'</span>;
 
@@ -932,7 +849,7 @@ print(completion.choices[0].message.content)</code></pre>
 });
 console.<span class="fn">log</span>(<span class="str">`Transfer settled: ${transfer.id}`</span>);</code></pre>
 
-          <pre id="fintech-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
+            <pre id="fintech-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
 <span class="kw">from</span> aurelia_fin_tech_ledger_sdk <span class="kw">import</span> <span class="typ">AureliaFinTechLedgerClient</span>
 
 ledger = <span class="typ">AureliaFinTechLedgerClient</span>(
@@ -953,28 +870,27 @@ transfer = ledger.<span class="fn">create_transfer</span>(
 )
 print(<span class="str">f"Settled transfer: {transfer.id}"</span>)</code></pre>
 
-          <pre id="fintech-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/fintech-ledger-v1.json specs/fintech-ledger-v2.json --fail-on-breaking</span>
-<span class="tag">## Watay Breaking-Change Report: Aurelia FinTech Ledger 1.0.0 → 2.0.0</span>
-<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9 · Info: 3</span>
+            <pre id="fintech-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/fintech-ledger-v1.json specs/fintech-ledger-v2.json --fail-on-breaking</span>
+<span class="tag">Watay Breaking-Change Report: Aurelia FinTech Ledger 1.0.0 → 2.0.0</span>
+<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 7 · Non-breaking: 9</span>
 
 <span class="typ">BREAKING CHANGES (7)</span>
-[BREAKING] request-type-changed            GET /v1/transfers &gt; query:limit (integer -&gt; string)
-[BREAKING] response-type-changed           GET /v1/transfers &gt; TransferPage.data[].amount_minor_units (integer -&gt; string)
-[BREAKING] request-required-property-added POST /v1/transfers &gt; CreateTransferRequest.compliance_purpose
-[BREAKING] success-response-removed        POST /v1/transfers &gt; response 201
-[BREAKING] response-type-changed           GET /v1/transfers/{transferId} &gt; Transfer.amount_minor_units
-[BREAKING] response-property-removed       POST /v1/webhooks &gt; WebhookEndpoint.secret_hint
-[BREAKING] security-requirement-added      POST /v1/webhooks (apiKeyAuth)
+- [request-type-changed]            GET /v1/transfers &gt; query:limit (integer -&gt; string)
+- [response-type-changed]           GET /v1/transfers &gt; data[].amount_minor_units (integer -&gt; string)
+- [request-required-property-added] POST /v1/transfers &gt; CreateTransferRequest.compliance_purpose
+- [success-response-removed]        POST /v1/transfers &gt; response 201 removed
+- [response-property-removed]       POST /v1/webhooks &gt; WebhookEndpoint.secret_hint
+- [security-requirement-added]      POST /v1/webhooks (apiKeyAuth required)
 
 <span class="str">NON-BREAKING ADDITIONS (9)</span>
-[SAFE]     operation-added                 POST /v1/reversals (createReversal)
-[SAFE]     request-enum-value-added        POST /v1/accounts &gt; currency ("CHF")
-[SAFE]     response-property-added         GET /v1/transfers &gt; TransferPage.data[].settled_at</code></pre>
-        </div>
++ [operation-added]                 POST /v1/reversals (createReversal)
++ [request-enum-value-added]        POST /v1/accounts &gt; currency ("CHF")
++ [response-property-added]         GET /v1/transfers &gt; data[].settled_at</code></pre>
+          </div>
 
-        <!-- Cloud Deploy Content -->
-        <div id="box-cloud" style="display: none;">
-          <pre id="cloud-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
+          <!-- Cloud Deploy Content -->
+          <div id="box-cloud" style="display: none;">
+            <pre id="cloud-ts"><code><span class="cmt">// Generated by Watay (https://watay.dev) — 0 external dependencies</span>
 <span class="kw">import</span> { <span class="typ">StratosCloudDeployClient</span> } <span class="kw">from</span> <span class="str">'@org/stratos-cloud-deploy-sdk'</span>;
 <span class="kw">import</span> <span class="kw">type</span> { <span class="typ">Deployment</span> } <span class="kw">from</span> <span class="str">'@org/stratos-cloud-deploy-sdk'</span>;
 
@@ -996,7 +912,7 @@ print(<span class="str">f"Settled transfer: {transfer.id}"</span>)</code></pre>
 });
 console.<span class="fn">log</span>(<span class="str">`Deployment initiated with status: ${deploy.status}`</span>);</code></pre>
 
-          <pre id="cloud-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
+            <pre id="cloud-py" style="display: none;"><code><span class="cmt"># Generated by Watay (https://watay.dev) — Python 3.10+ stdlib dataclasses &amp; urllib</span>
 <span class="kw">from</span> stratos_cloud_deploy_sdk <span class="kw">import</span> <span class="typ">StratosCloudDeployClient</span>
 
 cloud = <span class="typ">StratosCloudDeployClient</span>(
@@ -1014,271 +930,160 @@ deploy = cloud.<span class="fn">create_deployment</span>(
 )
 print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"</span>)</code></pre>
 
-          <pre id="cloud-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/cloud-deploy-v1.json specs/cloud-deploy-v2.json --fail-on-breaking</span>
-<span class="tag">## Watay Breaking-Change Report: Stratos Cloud Deploy 1.0.0 → 2.0.0</span>
-<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 8 · Non-breaking: 8 · Info: 3</span>
+            <pre id="cloud-diff" style="display: none;"><code><span class="cmt">$ npx watay diff specs/cloud-deploy-v1.json specs/cloud-deploy-v2.json --fail-on-breaking</span>
+<span class="tag">Watay Breaking-Change Report: Stratos Cloud Deploy 1.0.0 → 2.0.0</span>
+<span class="cmt">Suggested SemVer bump: MAJOR · Breaking: 8 · Non-breaking: 8</span>
 
 <span class="typ">BREAKING CHANGES (8)</span>
-[BREAKING] request-property-became-required POST /v1/apps/{appId}/deployments &gt; DeploymentRequest.strategy
-[BREAKING] request-maximum-tightened        POST /v1/apps/{appId}/deployments &gt; config.replicas (100 -&gt; 50)
-[BREAKING] response-became-nullable         POST /v1/apps/{appId}/deployments &gt; Deployment.endpoint_url
-[BREAKING] request-property-became-required PUT /v1/apps/{appId}/env &gt; EnvPatchRequest.restart
-[BREAKING] response-property-removed        PUT /v1/apps/{appId}/env &gt; EnvSnapshot.revision
-[BREAKING] request-property-became-required POST /v1/apps/{appId}/rollback &gt; RollbackRequest.reason
+- [request-property-became-required] POST /v1/apps/{appId}/deployments &gt; DeploymentRequest.strategy
+- [request-maximum-tightened]        POST /v1/apps/{appId}/deployments &gt; config.replicas (100 -&gt; 50)
+- [response-became-nullable]         POST /v1/apps/{appId}/deployments &gt; Deployment.endpoint_url
+- [request-property-became-required] PUT /v1/apps/{appId}/env &gt; EnvPatchRequest.restart
+- [response-property-removed]        PUT /v1/apps/{appId}/env &gt; EnvSnapshot.revision
 
 <span class="str">NON-BREAKING ADDITIONS (8)</span>
-[SAFE]     operation-added                  GET /v1/apps/{appId}/metrics (getAppMetrics)
-[SAFE]     optional-param-added             GET /v1/apps &gt; query:team_id
-[SAFE]     response-property-added          POST /v1/apps/{appId}/deployments &gt; rolled_back_from</code></pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- 02: Verification Guarantee -->
-    <div class="spec-bar" id="verification">
-      <span><strong>SECTION 02</strong> // VERIFICATION PROTOCOL &amp; RUNTIME PROOF</span>
-      <span>PRE-EMIT CONTRACT EXECUTION</span>
-    </div>
-
-    <section>
-      <div class="section-head">
-        <div>
-          <h2>How You Know the Generated Code Actually Works</h2>
-          <p>Traditional code generators emit static text templates and hope they compile. Watay treats code generation as a verified build pipeline: an SDK is only emitted after passing live HTTP contract assertions.</p>
-        </div>
-        <div class="section-meta">FLAG: --verify --heal</div>
-      </div>
-
-      <div class="verify-split">
-        <div class="verify-steps">
-          <div class="verify-row">
-            <div class="verify-idx">[01/04]</div>
-            <div>
-              <h3>Ephemeral HTTP Roundtrip Before Emit</h3>
-              <p>During generation, Watay boots a local HTTP contract server synthesized from your OpenAPI schemas and executes real network calls through every generated TypeScript and Python method—checking auth headers, path interpolation, query encoding, and status handling.</p>
-            </div>
-          </div>
-          <div class="verify-row">
-            <div class="verify-idx">[02/04]</div>
-            <div>
-              <h3>Standalone Test Suite Shipped in Every SDK</h3>
-              <p>The exact contract tests used to verify the build are written into <code>tests/contract.test.ts</code> and <code>tests/test_contract.py</code> inside your SDK. Run them anytime with <code>node --test</code> or <code>python3 -m unittest</code> without installing third-party test runners.</p>
-            </div>
-          </div>
-          <div class="verify-row">
-            <div class="verify-idx">[03/04]</div>
-            <div>
-              <h3>Runtime Payload Guards in Production</h3>
-              <p>Compile-time types vanish at runtime. Watay embeds a zero-dependency schema validator into every client so if a backend deployment accidentally drops a required field, the SDK throws a precise <code>ValidationError($.data[0].amount)</code> at the boundary.</p>
-            </div>
-          </div>
-          <div class="verify-row">
-            <div class="verify-idx">[04/04]</div>
-            <div>
-              <h3>Byte-Identical Determinism</h3>
-              <p>No probabilistic LLM lottery in your build pipeline. Identical OpenAPI inputs produce byte-for-byte identical files across runs, yielding clean 5-line <code>git diff</code> pull requests whenever an endpoint changes.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="verify-log">
-          <div class="verify-log-head">
-            <span>STDOUT // WATAY VERIFY PIPELINE</span>
-            <span>EXIT_CODE: 0</span>
-          </div>
-          <div class="verify-log-body">
-<pre><code><span class="cmt">$ npx watay generate openapi.json --lang ts,python --verify</span>
-
-[watay] parsed spec "Aurelia FinTech Ledger" v1.0.0 (6 operations, 10 schemas)
-[watay] compiled typescript -> 10 files (deterministic sha256 match)
-[watay] compiled python     ->  8 files (deterministic sha256 match)
-
-<span class="ok">[stage 1/4] path-safety</span>     PASS  all relative POSIX paths verified
-<span class="ok">[stage 2/4] syntax-check</span>    PASS  node --check &amp; python3 -m py_compile
-<span class="ok">[stage 3/4] contract-ts</span>     PASS  node --test tests/contract.test.ts
-  <span class="ok">ok 1</span> - GET /v1/accounts (listAccounts) roundtrip &amp; schema contract
-  <span class="ok">ok 2</span> - POST /v1/accounts (createAccount) required body &amp; enum check
-  <span class="ok">ok 3</span> - GET /v1/transfers (listTransfers) query params &amp; pagination
-  <span class="ok">ok 4</span> - POST /v1/transfers (createTransfer) Idempotency-Key &amp; 201 response
-  <span class="ok">ok 5</span> - retries idempotent GET on transient HTTP 503 Service Unavailable
-  <span class="ok">ok 6</span> - rejects malformed response payload with ValidationError
-<span class="ok">[stage 4/4] contract-py</span>     PASS  python3 -m unittest discover -s tests
-  <span class="ok">ok 1</span> - test_all_operations_roundtrip_and_dataclass_serialization
-  <span class="ok">ok 2</span> - test_bearer_and_api_key_header_injection
-  <span class="ok">ok 3</span> - test_retry_on_503_and_typed_api_error_on_500
-  <span class="ok">ok 4</span> - test_runtime_validator_rejects_contract_drift
-
-[watay] verification complete: 18/18 assertions passed (0 failed).</code></pre>
++ [operation-added]                  GET /v1/apps/{appId}/metrics (getAppMetrics)
++ [optional-param-added]             GET /v1/apps &gt; query:team_id
++ [response-property-added]          POST /v1/apps/{appId}/deployments &gt; rolled_back_from</code></pre>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 03: Engineering Comparison Matrix -->
-    <div class="spec-bar" id="comparison">
-      <span><strong>SECTION 03</strong> // TOOLCHAIN COMPARISON MATRIX</span>
-      <span>ARCHITECTURAL TRADE-OFFS</span>
-    </div>
+    <!-- Section 3: Comparison -->
+    <section id="comparison">
+      <div class="section-header">
+        <span class="section-kicker">03 · Architecture Comparison</span>
+        <h2>Why teams replace legacy generators and $2,000/mo SaaS</h2>
+        <p>
+          Full CI/CD automation and contract verification without uploading proprietary API schemas to external cloud servers.
+        </p>
+      </div>
 
-    <section class="matrix-wrap">
-      <table class="matrix-table">
+      <table class="compare-table">
         <thead>
           <tr>
-            <th>PARAMETER</th>
-            <th>LEGACY (openapi-generator)</th>
-            <th>CLOUD SAAS (Speakeasy / Stainless)</th>
-            <th>WATAY (watay.dev)</th>
+            <th>Capability</th>
+            <th>openapi-generator</th>
+            <th>Speakeasy / Stainless</th>
+            <th>Watay (watay.dev)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <th>Execution Model</th>
-            <td>Local JVM / Java heap</td>
-            <td>Proprietary multi-tenant cloud proxy</td>
-            <td class="col-watay">100% Client-Side (Node &gt;=22 native TS)</td>
+            <th>Where it runs</th>
+            <td>Local Java / JVM</td>
+            <td>Vendor multi-tenant cloud</td>
+            <td class="highlight">100% in your own GitHub Runner</td>
           </tr>
           <tr>
-            <th>Data Retention / Privacy</th>
+            <th>Data privacy</th>
             <td>Local disk</td>
-            <td>Specs &amp; schemas uploaded to vendor cloud</td>
-            <td class="col-watay">Zero-Data-Retention (never leaves runner)</td>
+            <td>Specs uploaded to vendor cloud</td>
+            <td class="highlight">Zero-Data-Retention (0 bytes leave CI)</td>
           </tr>
           <tr>
-            <th>Runtime SDK Dependencies</th>
-            <td>Axios, urllib3, pydantic, dateutil</td>
-            <td>Vendor runtime packages</td>
-            <td class="col-watay">0 dependencies (native fetch &amp; stdlib urllib)</td>
+            <th>SDK dependencies</th>
+            <td>Axios, urllib3, pydantic</td>
+            <td>Custom runtime packages</td>
+            <td class="highlight">0 dependencies (native fetch &amp; stdlib)</td>
           </tr>
           <tr>
-            <th>Pre-Emit Contract Verification</th>
-            <td>None (emits unverified templates)</td>
+            <th>Pre-emit contract tests</th>
+            <td>None (untested templates)</td>
             <td>Manual test configuration</td>
-            <td class="col-watay">Built-in ephemeral HTTP mock + contract suite</td>
+            <td class="highlight">Built-in HTTP mock server + test suite</td>
           </tr>
           <tr>
-            <th>Directional Breaking-Change Gate</th>
+            <th>Breaking-change PR gate</th>
             <td>Not included</td>
-            <td>Cloud dashboard only</td>
-            <td class="col-watay">Built-in CLI &amp; PR comment gate (watay diff)</td>
+            <td>Cloud dashboard</td>
+            <td class="highlight">Built-in CLI &amp; PR comment gate</td>
           </tr>
           <tr>
-            <th>Pricing Model</th>
-            <td>Free (high maintenance cost)</td>
+            <th>Cost</th>
+            <td>Free (high maintenance)</td>
             <td>$1,000 – $5,000 / month</td>
-            <td class="col-watay">$0 OSS CLI / $49 Pro CI / $199 Scale Org</td>
+            <td class="highlight">$0 OSS CLI · $49 Pro · $199 Scale</td>
           </tr>
         </tbody>
       </table>
     </section>
 
-    <!-- 04: Architecture & Technical Capabilities -->
-    <div class="spec-bar" id="architecture">
-      <span><strong>SECTION 04</strong> // COMPILER &amp; RUNNER ARCHITECTURE</span>
-      <span>SUBSYSTEM SPECIFICATIONS</span>
-    </div>
+    <!-- Section 4: Pricing -->
+    <section id="pricing" style="border-bottom: none;">
+      <div class="section-header">
+        <span class="section-kicker">04 · Licensing</span>
+        <h2>Simple, self-serve pricing</h2>
+        <p>
+          Use the open-source CLI free forever. Add a license key in your GitHub Action for automated PR gating and CI publishing.
+        </p>
+      </div>
 
-    <section class="cap-grid">
-      <div class="cap-cell">
-        <span class="cap-code">SYS_01 // VARIANCE_ENGINE</span>
-        <h3>Contravariant / Covariant Diffing</h3>
-        <p>Evaluates request inputs contravariantly and response outputs covariantly. Tightening a request maximum or removing a response property triggers a major bump; widening a request union is marked safe.</p>
-      </div>
-      <div class="cap-cell">
-        <span class="cap-code">SYS_02 // ZERO_DEPENDENCY_TARGETS</span>
-        <h3>Zero Supply-Chain Footprint</h3>
-        <p>Generated TypeScript SDKs rely strictly on standard <code>fetch</code>. Generated Python SDKs use standard <code>dataclasses</code> and <code>urllib.request</code>. No transitive dependency vulnerabilities in your consumers' trees.</p>
-      </div>
-      <div class="cap-cell">
-        <span class="cap-code">SYS_03 // WIRE_NAME_HYGIENE</span>
-        <h3>Reserved Keyword &amp; Wire Mapping</h3>
-        <p>Automatically sanitizes reserved language identifiers (such as <code>from</code>, <code>class</code>, or <code>async</code> in Python and TypeScript) into safe field names while preserving exact JSON wire serialization.</p>
-      </div>
-      <div class="cap-cell">
-        <span class="cap-code">SYS_04 // RESILIENCE_PRIMITIVES</span>
-        <h3>Idempotent Retries &amp; Backoff</h3>
-        <p>Every generated client includes configurable exponential backoff with jitter for idempotent HTTP methods on transient <code>429</code>, <code>502</code>, <code>503</code>, and <code>504</code> responses, plus structured <code>ApiError</code> exceptions.</p>
-      </div>
-      <div class="cap-cell">
-        <span class="cap-code">SYS_05 // SELF_HEALING_HOOK</span>
-        <h3>Deterministic + BYOK Repair Loop</h3>
-        <p>When <code>--heal</code> is enabled, Watay automatically resolves common schema edge cases and supports an optional Bring-Your-Own-Key repair callback inside your runner—gated strictly behind the contract verifier.</p>
-      </div>
-      <div class="cap-cell">
-        <span class="cap-code">SYS_06 // AIR_GAPPED_SECURITY</span>
-        <h3>Air-Gapped &amp; Runner-Native</h3>
-        <p>Executes inside standard GitHub Actions or self-hosted runners using the native <code>GITHUB_TOKEN</code>. No external webhook servers or source-code write tokens required.</p>
+      <div class="pricing-cards">
+        <div class="price-card">
+          <div>
+            <div class="price-tier">
+              <span>Community</span>
+              <span style="color: var(--text-muted); font-weight: 400;">MIT Core</span>
+            </div>
+            <div class="price-val">$0 <span>/ forever</span></div>
+            <div class="price-desc">Full local CLI for individual developers and open-source projects.</div>
+            <ul class="price-list">
+              <li>100% client-side CLI (npx watay)</li>
+              <li>TypeScript &amp; Python SDK generation</li>
+              <li>Local breaking-change diffing</li>
+              <li>Generated HTTP contract test suites</li>
+            </ul>
+          </div>
+          <a href="https://github.com/testinc/watay" class="btn-block">Install via npx</a>
+        </div>
+
+        <div class="price-card featured">
+          <div>
+            <div class="price-tier">
+              <span>Pro CI</span>
+              <span class="badge-rec">Recommended</span>
+            </div>
+            <div class="price-val">$49 <span>/ repo / mo</span></div>
+            <div class="price-desc">Automated CI/CD pull-request gating and contract verification for teams.</div>
+            <ul class="price-list">
+              <li>Everything in Community</li>
+              <li>GitHub Action breaking-change PR gate</li>
+              <li>Automated PR Markdown diff comments</li>
+              <li>CI contract verification &amp; self-healing</li>
+              <li>Offline / air-gapped runner license key</li>
+            </ul>
+          </div>
+          <a href="https://buy.polar.sh/watay-pro" class="btn-block solid">Get Pro License Key</a>
+        </div>
+
+        <div class="price-card">
+          <div>
+            <div class="price-tier">
+              <span>Scale Org</span>
+              <span style="color: var(--text-muted); font-weight: 400;">Unlimited</span>
+            </div>
+            <div class="price-val">$199 <span>/ org / mo</span></div>
+            <div class="price-desc">Organization-wide license for multi-repo teams and automated registry publishing.</div>
+            <ul class="price-list">
+              <li>Unlimited repositories &amp; workflows</li>
+              <li>Auto-publish SDKs to npm &amp; PyPI in CI</li>
+              <li>Custom AST / template overrides</li>
+              <li>BYOK LLM repair loop integration</li>
+            </ul>
+          </div>
+          <a href="https://buy.polar.sh/watay-scale" class="btn-block">Get Scale License Key</a>
+        </div>
       </div>
     </section>
+  </main>
 
-    <!-- 05: Licensing & Pricing -->
-    <div class="spec-bar" id="pricing">
-      <span><strong>SECTION 05</strong> // LICENSING &amp; SELF-SERVE TIERS</span>
-      <span>MIT CORE + SERVERLESS LICENSE KEY ACTIVATION</span>
-    </div>
-
-    <section class="pricing-grid">
-      <div class="price-col">
-        <div>
-          <div class="price-tier">
-            <span>TIER_01 // COMMUNITY</span>
-            <span>MIT_LICENSE</span>
-          </div>
-          <div class="price-amount">$0 <span>/ forever</span></div>
-          <div class="price-desc">Full local CLI for individual engineers and open-source repositories.</div>
-          <ul class="price-list">
-            <li>100% client-side CLI (npx watay)</li>
-            <li>Unlimited TypeScript &amp; Python SDK codegen</li>
-            <li>Local semantic breaking-change diffing</li>
-            <li>Generated mock-server contract test suites</li>
-            <li>Zero data retention</li>
-          </ul>
-        </div>
-        <a href="https://github.com/testinc/watay" class="btn btn-outline" style="justify-content: center;">INSTALL VIA NPX</a>
-      </div>
-
-      <div class="price-col pro-col">
-        <div>
-          <div class="price-tier">
-            <span>TIER_02 // PRO CI</span>
-            <span class="tier-tag">RECOMMENDED</span>
-          </div>
-          <div class="price-amount">$49 <span>/ repo / month</span></div>
-          <div class="price-desc">Automated CI/CD pull-request gating and contract verification for production APIs.</div>
-          <ul class="price-list">
-            <li>Everything in Community</li>
-            <li>GitHub Action breaking-change PR gatekeeper</li>
-            <li>Idempotent PR Markdown diff comments</li>
-            <li>Automated CI contract verification &amp; self-healing</li>
-            <li>Offline / air-gapped runner key support</li>
-          </ul>
-        </div>
-        <a href="https://buy.polar.sh/watay-pro" class="btn btn-solid" style="justify-content: center;">ACQUIRE PRO LICENSE KEY &#8594;</a>
-      </div>
-
-      <div class="price-col">
-        <div>
-          <div class="price-tier">
-            <span>TIER_03 // SCALE ORG</span>
-            <span>ENTERPRISE</span>
-          </div>
-          <div class="price-amount">$199 <span>/ org / month</span></div>
-          <div class="price-desc">Organization-wide license for multi-service engineering teams and automated registry publishing.</div>
-          <ul class="price-list">
-            <li>Everything in Pro across unlimited repositories</li>
-            <li>Automated npm &amp; PyPI registry publishing in CI</li>
-            <li>Custom AST / template overrides</li>
-            <li>BYOK LLM repair loop integration</li>
-            <li>Dedicated offline organization license key</li>
-          </ul>
-        </div>
-        <a href="https://buy.polar.sh/watay-scale" class="btn btn-outline" style="justify-content: center;">ACQUIRE SCALE LICENSE KEY &#8594;</a>
-      </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-      <span>WATAY.DEV // ETYMOLOGY: QUECHUA "WATAY" (TO BIND / LINK TOGETHER)</span>
-      <span>© 2026 TESTINC · <a href="https://watay.dev">WATAY.DEV</a> · MIT OPEN-SOURCE CORE</span>
+  <!-- Footer -->
+  <div style="border-top: 1px solid var(--border);">
+    <footer class="container">
+      <span>Watay (Quechua: "to bind together") · Deterministic SDK Compiler</span>
+      <span>© 2026 TestInc · <a href="https://watay.dev">watay.dev</a> · MIT License</span>
     </footer>
   </div>
 
@@ -1319,7 +1124,7 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
       navigator.clipboard.writeText(text);
       if (btn) {
         var orig = btn.innerText;
-        btn.innerText = 'COPIED';
+        btn.innerText = 'Copied';
         setTimeout(function() { btn.innerText = orig; }, 1500);
       }
     }
@@ -1330,7 +1135,7 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
         navigator.clipboard.writeText(activeEl.innerText);
         if (btn) {
           var orig = btn.innerText;
-          btn.innerText = 'COPIED';
+          btn.innerText = 'Copied';
           setTimeout(function() { btn.innerText = orig; }, 1500);
         }
       }
