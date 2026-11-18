@@ -5,6 +5,10 @@
   "type": "module",
   "license": "MIT",
   "homepage": "https://watay.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/renezwch/watay.git"
+  },
   "bin": {
     "watay": "./src/cli/index.ts"
   },
