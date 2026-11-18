@@ -1,0 +1,34 @@
+name: Watay CI & Contract Verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Test Suite & Showcase Contract Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22 (Native TypeScript Execution)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Watay Core, Codegen & Action Test Suite (42 tests)
+        run: node --experimental-strip-types --test tests/*.test.ts
+
+      - name: Run Live Showcase Ecosystem Demo (6 SDKs + Contract Tests)
+        run: node --experimental-strip-types showcases/run-demo.ts

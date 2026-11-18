@@ -3,6 +3,7 @@
 > **Autonomous Multi-Language SDK Generation, Contract Guard Semantic Gatekeeper & Contract Testing.**  
 > *100% Client-Side Execution. Zero-Data-Retention. Zero External Runtime Dependencies.*
 
+[![CI & Contract Verification](https://github.com/renezwch/watay/actions/workflows/ci.yml/badge.svg)](https://github.com/renezwch/watay/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Runtime: Node >= 22](https://img.shields.io/badge/Node-%3E%3D22-brightgreen.svg)](https://nodejs.org/)
 [![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
