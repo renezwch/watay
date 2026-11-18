@@ -523,8 +523,88 @@
     footer a { color: var(--text-muted); text-decoration: none; }
     footer a:hover { color: #fff; }
 
+    /* Proof / Verification Section */
+    .proof-section {
+      margin-bottom: 110px;
+    }
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+    .proof-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .proof-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      transition: all 0.2s;
+    }
+    .proof-step:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(52, 211, 153, 0.4);
+    }
+    .proof-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: rgba(52, 211, 153, 0.14);
+      border: 1px solid rgba(52, 211, 153, 0.4);
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .proof-step h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+    .proof-step p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+    .proof-terminal {
+      background: #080c14;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+    }
+    .proof-terminal-body {
+      padding: 22px 24px;
+      font-family: var(--font-mono);
+      font-size: 0.86rem;
+      line-height: 1.7;
+      color: #cbd5e1;
+      overflow-x: auto;
+      flex: 1;
+    }
+    .ok-badge {
+      color: var(--accent-green);
+      font-weight: 700;
+    }
+
     @media (max-width: 860px) {
       .showcase-nav { grid-template-columns: 1fr; }
+      .proof-grid { grid-template-columns: 1fr; }
       h1 { font-size: 2.4rem; }
       .zdr-banner { flex-direction: column; text-align: center; }
       .nav-links { display: none; }
@@ -548,6 +628,7 @@
       </a>
       <div class="nav-links">
         <a href="#showcases">Live Showcases</a>
+        <a href="#verification">Verification Guarantee</a>
         <a href="#features">Features</a>
         <a href="#zero-data-retention">Security (ZDR)</a>
         <a href="#pricing">Pricing</a>
@@ -801,6 +882,99 @@ print(<span class="str">f"Deployment ID: {deploy.id} (Status: {deploy.status})"<
 - `operation-added` **GET /v1/apps/{appId}/metrics** — Operation getAppMetrics added
 - `optional-param-added` **GET /v1/apps > parameter team_id** — Optional query parameter added
 - `response-property-added` **POST /v1/apps/{appId}/deployments > rolled_back_from** — Property added</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How You Know The Generated Code Actually Works (Verification Guarantee) -->
+    <section id="verification" class="proof-section">
+      <div class="section-title">
+        <div class="hero-badge" style="margin-bottom: 12px; color: var(--accent-green); border-color: rgba(52,211,153,0.35); background: rgba(52,211,153,0.1);">
+          <span style="background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green);"></span> Zero Blind Trust · Mathematical &amp; Runtime Proof
+        </div>
+        <h2>How Do You Know the Generated SDK Works?</h2>
+        <p>
+          Other generators hand you untested code files and wish you luck. Watay refuses to emit an SDK until every endpoint is proven against a live contract server.
+        </p>
+      </div>
+
+      <div class="proof-grid">
+        <div class="proof-steps">
+          <div class="proof-step">
+            <div class="proof-num">01</div>
+            <div>
+              <h3>Live HTTP Roundtrip Verification Before Emit</h3>
+              <p>
+                Before Watay finishes, it boots an ephemeral contract server on your runner and executes real HTTP requests through every generated TypeScript and Python method—verifying auth headers, path parameters, serialization, and retry logic.
+              </p>
+            </div>
+          </div>
+
+          <div class="proof-step">
+            <div class="proof-num">02</div>
+            <div>
+              <h3>Shipped With Runnable Contract Tests You Own</h3>
+              <p>
+                Every SDK ships with a standalone <code>tests/</code> suite using native <code>node:test</code> and Python <code>unittest</code>. Run them yourself in 1 second in your CI—zero external test frameworks required.
+              </p>
+            </div>
+          </div>
+
+          <div class="proof-step">
+            <div class="proof-num">03</div>
+            <div>
+              <h3>Built-In Runtime Payload Guards in Production</h3>
+              <p>
+                Static types disappear at runtime. Watay embeds lightweight schema guards directly into the SDK client so if your production backend ever drifts or drops a required field, you get a pinpoint <code>ValidationError($.data[0].amount)</code> instead of silent corruption.
+              </p>
+            </div>
+          </div>
+
+          <div class="proof-step">
+            <div class="proof-num">04</div>
+            <div>
+              <h3>100% Deterministic Output (No AI Lottery)</h3>
+              <p>
+                Same OpenAPI input produces byte-for-byte identical SDK output every single time. Review clean 5-line <code>git diff</code> pull requests when your API changes—with optional self-healing only when needed.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="proof-terminal">
+          <div class="preview-header">
+            <div class="window-dots">
+              <div class="dot dot-red"></div>
+              <div class="dot dot-yellow"></div>
+              <div class="dot dot-green"></div>
+            </div>
+            <span style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">watay verify --lang ts,python (Live Runner Proof)</span>
+          </div>
+          <div class="proof-terminal-body">
+<pre><code><span class="cmt">$ npx watay generate openapi.json --lang ts,python --verify</span>
+
+<span class="fn">🪢 Watay Verification Pipeline</span> <span class="cmt">(100% local runner)</span>
+──────────────────────────────────────────────────────
+<span class="ok-badge">✔ [1/4] Determinism &amp; Path Guard</span>    Byte-identical output
+<span class="ok-badge">✔ [2/4] Compiler &amp; Syntax Check</span>     TS &amp; Python 3.10+ clean
+<span class="ok-badge">✔ [3/4] Ephemeral Contract Server</span>   Listening on 127.0.0.1
+
+<span class="typ">▶ Running Generated TypeScript Contract Suite (node:test)</span>
+  <span class="ok-badge">✔</span> GET /v1/accounts (listAccounts) roundtrip &amp; schema
+  <span class="ok-badge">✔</span> POST /v1/transfers (createTransfer) headers &amp; body
+  <span class="ok-badge">✔</span> Retries idempotent GET on transient 503 Service Unavailable
+  <span class="ok-badge">✔</span> Rejects malformed payloads with pinpoint ValidationError
+
+<span class="typ">▶ Running Generated Python Contract Suite (unittest)</span>
+  <span class="ok-badge">✔</span> test_list_accounts_roundtrip_and_dataclass_mapping ... ok
+  <span class="ok-badge">✔</span> test_create_transfer_idempotency_and_auth_headers ... ok
+  <span class="ok-badge">✔</span> test_transient_503_retry_and_typed_api_error ... ok
+  <span class="ok-badge">✔</span> test_runtime_validator_catches_contract_drift ... ok
+
+──────────────────────────────────────────────────────
+<span class="ok-badge">✅ VERIFIED: 18/18 contract assertions passed (0 failed)</span>
+<span class="cmt">Ready to publish to npm &amp; PyPI with 100% confidence.</span></code></pre>
           </div>
         </div>
       </div>
