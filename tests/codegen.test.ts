@@ -149,6 +149,10 @@ describe('Watay Codegen: Determinism & Path Safety', () => {
     const py2 = generatePython(ir, { withContractTests: true });
     assert.deepEqual(py1, py2);
     assert.equal(Object.keys(py1.files).length > 5, true);
+
+    assert.ok(ts1.files['README.md']?.includes('⚡ Generated autonomously by [Watay](https://watay.dev)'));
+    assert.ok(py1.files['README.md']?.includes('⚡ Generated autonomously by [Watay](https://watay.dev)'));
+    assert.equal(ts1.files['README.md']?.includes('{ /*  */ }'), false);
   });
 
   test('all generated file paths are safe relative POSIX paths', () => {

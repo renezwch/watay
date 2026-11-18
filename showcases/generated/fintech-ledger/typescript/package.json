@@ -1,0 +1,40 @@
+{
+  "name": "aurelia-fin-tech-ledger-sdk",
+  "version": "2.0.0",
+  "description": "Multi-currency ledger, idempotent payouts, reversals, and real-time webhook event API.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20.3.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "node --test tests/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  },
+  "keywords": [
+    "openapi",
+    "sdk",
+    "api-client",
+    "generated",
+    "watay"
+  ]
+}

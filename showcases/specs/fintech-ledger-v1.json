@@ -1,0 +1,256 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Aurelia FinTech Ledger",
+    "version": "1.0.0",
+    "description": "Multi-currency ledger, idempotent payouts, and real-time webhook event API."
+  },
+  "servers": [
+    { "url": "https://ledger.aurelia.dev/v1" }
+  ],
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/v1/accounts": {
+      "post": {
+        "operationId": "createAccount",
+        "summary": "Open a multi-currency ledger account",
+        "tags": ["accounts"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateAccountRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Account" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/transfers": {
+      "get": {
+        "operationId": "listTransfers",
+        "summary": "List paginated ledger transfers",
+        "tags": ["transfers"],
+        "parameters": [
+          { "name": "account_id", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated transfers",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TransferPage" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTransfer",
+        "summary": "Create an idempotent ledger transfer",
+        "tags": ["transfers"],
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string", "minLength": 8 }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateTransferRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Transfer accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transfer" }
+              }
+            }
+          },
+          "409": {
+            "description": "Idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LedgerError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/transfers/{transferId}": {
+      "parameters": [
+        { "name": "transferId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "getTransfer",
+        "summary": "Fetch a single transfer by ID",
+        "tags": ["transfers"],
+        "responses": {
+          "200": {
+            "description": "Transfer record",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Transfer" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LedgerError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/webhooks": {
+      "post": {
+        "operationId": "registerWebhook",
+        "summary": "Register a signed webhook endpoint",
+        "tags": ["webhooks"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/WebhookRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook registered",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/WebhookEndpoint" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key"
+      }
+    },
+    "schemas": {
+      "Currency": {
+        "type": "string",
+        "enum": ["USD", "EUR", "GBP"]
+      },
+      "CreateAccountRequest": {
+        "type": "object",
+        "required": ["owner_name", "currency", "account_type"],
+        "properties": {
+          "owner_name": { "type": "string", "minLength": 1, "maxLength": 120 },
+          "currency": { "$ref": "#/components/schemas/Currency" },
+          "account_type": { "type": "string", "enum": ["checking", "escrow", "treasury"] }
+        }
+      },
+      "Account": {
+        "type": "object",
+        "required": ["id", "owner_name", "currency", "balance_minor_units"],
+        "properties": {
+          "id": { "type": "string" },
+          "owner_name": { "type": "string" },
+          "currency": { "$ref": "#/components/schemas/Currency" },
+          "balance_minor_units": { "type": "integer", "format": "int64" }
+        }
+      },
+      "CreateTransferRequest": {
+        "type": "object",
+        "required": ["source_account_id", "destination_account_id", "amount_minor_units", "currency"],
+        "properties": {
+          "source_account_id": { "type": "string" },
+          "destination_account_id": { "type": "string" },
+          "amount_minor_units": { "type": "integer", "minimum": 1 },
+          "currency": { "$ref": "#/components/schemas/Currency" },
+          "metadata": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      },
+      "Transfer": {
+        "type": "object",
+        "required": ["id", "source_account_id", "destination_account_id", "amount_minor_units", "currency", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "source_account_id": { "type": "string" },
+          "destination_account_id": { "type": "string" },
+          "amount_minor_units": { "type": "integer", "format": "int64" },
+          "currency": { "$ref": "#/components/schemas/Currency" },
+          "status": { "type": "string", "enum": ["pending", "settled", "failed"] },
+          "metadata": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      },
+      "TransferPage": {
+        "type": "object",
+        "required": ["data", "has_more"],
+        "properties": {
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/Transfer" } },
+          "next_cursor": { "type": ["string", "null"] },
+          "has_more": { "type": "boolean" }
+        }
+      },
+      "WebhookRequest": {
+        "type": "object",
+        "required": ["url", "events"],
+        "properties": {
+          "url": { "type": "string", "format": "uri" },
+          "events": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "enum": ["transfer.created", "transfer.settled", "transfer.failed"] }
+          }
+        }
+      },
+      "WebhookEndpoint": {
+        "type": "object",
+        "required": ["id", "url", "events", "secret_hint"],
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string" },
+          "events": { "type": "array", "items": { "type": "string" } },
+          "secret_hint": { "type": "string" }
+        }
+      },
+      "LedgerError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

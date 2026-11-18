@@ -1,0 +1,327 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NexusAI LLM Gateway",
+    "version": "2.0.0",
+    "description": "Unified inference, embeddings, and moderation gateway across frontier LLM providers."
+  },
+  "servers": [
+    { "url": "https://api.nexusai.dev/v2" }
+  ],
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/v1/chat/completions": {
+      "post": {
+        "operationId": "createChatCompletion",
+        "summary": "Create a chat completion",
+        "tags": ["inference"],
+        "parameters": [
+          {
+            "name": "X-Tenant-Id",
+            "in": "header",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatCompletionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful completion response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatCompletionResponse" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RateLimitError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/embeddings": {
+      "post": {
+        "operationId": "createEmbeddings",
+        "summary": "Generate vector embeddings",
+        "tags": ["embeddings"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EmbeddingRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Embedding vectors",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EmbeddingResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/moderations": {
+      "post": {
+        "operationId": "moderateContent",
+        "summary": "Classify text against safety policies",
+        "tags": ["safety"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ModerationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Moderation verdict",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ModerationResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/models": {
+      "get": {
+        "operationId": "listModels",
+        "summary": "List available gateway models",
+        "tags": ["models"],
+        "parameters": [
+          {
+            "name": "capability",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["chat", "embedding", "moderation"] }
+          },
+          {
+            "name": "include_deprecated",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "boolean" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of models",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ModelList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/models/{modelId}": {
+      "parameters": [
+        {
+          "name": "modelId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "operationId": "getModel",
+        "summary": "Get model metadata and limits",
+        "deprecated": true,
+        "tags": ["models"],
+        "responses": {
+          "200": {
+            "description": "Model details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ModelInfo" }
+              }
+            }
+          },
+          "404": {
+            "description": "Model not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GatewayError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ChatModelId": {
+        "type": "string",
+        "enum": ["gpt-4o", "claude-sonnet-4", "gemini-2.5-pro", "gemini-4-hydrogen"]
+      },
+      "ChatRequestMessage": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": { "type": "string", "enum": ["system", "user", "assistant"] },
+          "content": { "type": "string" },
+          "name": { "type": ["string", "null"] }
+        }
+      },
+      "ChatResponseMessage": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": { "type": "string", "enum": ["system", "user", "assistant"] },
+          "content": { "type": ["string", "null"] },
+          "name": { "type": ["string", "null"] }
+        }
+      },
+      "ChatCompletionRequest": {
+        "type": "object",
+        "required": ["model", "messages"],
+        "properties": {
+          "model": { "$ref": "#/components/schemas/ChatModelId" },
+          "messages": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "$ref": "#/components/schemas/ChatRequestMessage" }
+          },
+          "temperature": { "type": "number", "minimum": 0, "maximum": 1 },
+          "max_tokens": { "type": "integer", "minimum": 1, "maximum": 32768 },
+          "stream": { "type": "boolean", "default": false }
+        }
+      },
+      "ChatChoice": {
+        "type": "object",
+        "required": ["index", "message", "finish_reason"],
+        "properties": {
+          "index": { "type": "integer" },
+          "message": { "$ref": "#/components/schemas/ChatResponseMessage" },
+          "finish_reason": { "type": "string", "enum": ["stop", "length", "content_filter", "tool_calls"] }
+        }
+      },
+      "TokenUsage": {
+        "type": "object",
+        "required": ["prompt_tokens", "completion_tokens", "total_tokens"],
+        "properties": {
+          "prompt_tokens": { "type": "integer" },
+          "completion_tokens": { "type": "integer" },
+          "total_tokens": { "type": "integer" },
+          "cached_tokens": { "type": "integer" }
+        }
+      },
+      "ChatCompletionResponse": {
+        "type": "object",
+        "required": ["id", "model", "choices", "usage"],
+        "properties": {
+          "id": { "type": "string" },
+          "model": { "$ref": "#/components/schemas/ChatModelId" },
+          "choices": { "type": "array", "items": { "$ref": "#/components/schemas/ChatChoice" } },
+          "usage": { "$ref": "#/components/schemas/TokenUsage" }
+        }
+      },
+      "EmbeddingRequest": {
+        "type": "object",
+        "required": ["model", "input"],
+        "properties": {
+          "model": { "type": "string", "enum": ["text-embedding-3-small", "text-embedding-3-large"] },
+          "input": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          },
+          "dimensions": { "type": "integer", "minimum": 64, "maximum": 3072 }
+        }
+      },
+      "EmbeddingVector": {
+        "type": "object",
+        "required": ["index", "embedding"],
+        "properties": {
+          "index": { "type": "integer" },
+          "embedding": { "type": "array", "items": { "type": "number" } }
+        }
+      },
+      "EmbeddingResponse": {
+        "type": "object",
+        "required": ["model", "data", "usage"],
+        "properties": {
+          "model": { "type": "string" },
+          "data": { "type": "array", "items": { "$ref": "#/components/schemas/EmbeddingVector" } },
+          "usage": { "$ref": "#/components/schemas/TokenUsage" }
+        }
+      },
+      "ModerationRequest": {
+        "type": "object",
+        "required": ["input"],
+        "properties": {
+          "input": { "type": "string" }
+        }
+      },
+      "ModerationResponse": {
+        "type": "object",
+        "required": ["flagged"],
+        "properties": {
+          "flagged": { "type": "boolean" }
+        }
+      },
+      "ModelInfo": {
+        "type": "object",
+        "required": ["id", "provider", "context_window"],
+        "properties": {
+          "id": { "type": "string" },
+          "provider": { "type": "string", "enum": ["openai", "anthropic", "google"] },
+          "context_window": { "type": "integer" }
+        }
+      },
+      "ModelList": {
+        "type": "object",
+        "required": ["models"],
+        "properties": {
+          "models": { "type": "array", "items": { "$ref": "#/components/schemas/ModelInfo" } }
+        }
+      },
+      "RateLimitError": {
+        "type": "object",
+        "required": ["code", "message", "retry_after_ms"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "retry_after_ms": { "type": "integer" }
+        }
+      },
+      "GatewayError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

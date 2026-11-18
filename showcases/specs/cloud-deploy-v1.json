@@ -1,0 +1,252 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Stratos Cloud Deploy",
+    "version": "1.0.0",
+    "description": "Serverless container and edge deployment control plane with zero-downtime rollbacks."
+  },
+  "servers": [
+    { "url": "https://control.stratos.dev/v1" }
+  ],
+  "security": [
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/v1/apps": {
+      "get": {
+        "operationId": "listApps",
+        "summary": "List deployed edge applications",
+        "tags": ["apps"],
+        "parameters": [
+          { "name": "region", "in": "query", "required": false, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Applications list",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AppList" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/apps/{appId}/deployments": {
+      "parameters": [
+        { "name": "appId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "operationId": "createDeployment",
+        "summary": "Trigger a container deployment",
+        "tags": ["deployments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DeploymentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Deployment queued",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Deployment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/apps/{appId}/deployments/{deploymentId}": {
+      "parameters": [
+        { "name": "appId", "in": "path", "required": true, "schema": { "type": "string" } },
+        { "name": "deploymentId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "get": {
+        "operationId": "getDeployment",
+        "summary": "Inspect deployment status",
+        "tags": ["deployments"],
+        "responses": {
+          "200": {
+            "description": "Deployment details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Deployment" }
+              }
+            }
+          },
+          "404": {
+            "description": "Deployment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeployError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/apps/{appId}/rollback": {
+      "parameters": [
+        { "name": "appId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "post": {
+        "operationId": "rollbackDeployment",
+        "summary": "Roll back an application to a previous deployment",
+        "tags": ["deployments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RollbackRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rollback initiated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Deployment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/apps/{appId}/env": {
+      "parameters": [
+        { "name": "appId", "in": "path", "required": true, "schema": { "type": "string" } }
+      ],
+      "put": {
+        "operationId": "updateEnvVars",
+        "summary": "Replace runtime environment variables",
+        "tags": ["configuration"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EnvPatchRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Environment updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EnvSnapshot" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "HealthCheck": {
+        "type": "object",
+        "required": ["path", "interval_sec"],
+        "properties": {
+          "path": { "type": "string" },
+          "interval_sec": { "type": "integer", "minimum": 5, "maximum": 300 },
+          "timeout_sec": { "type": "integer", "minimum": 1, "maximum": 30 }
+        }
+      },
+      "RuntimeConfig": {
+        "type": "object",
+        "required": ["cpu_millis", "memory_mb", "replicas"],
+        "properties": {
+          "cpu_millis": { "type": "integer", "minimum": 100, "maximum": 16000 },
+          "memory_mb": { "type": "integer", "minimum": 128, "maximum": 65536 },
+          "replicas": { "type": "integer", "minimum": 1, "maximum": 100 },
+          "regions": { "type": "array", "items": { "type": "string" } },
+          "health_check": { "$ref": "#/components/schemas/HealthCheck" }
+        }
+      },
+      "AppSummary": {
+        "type": "object",
+        "required": ["id", "name", "primary_region", "status"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "primary_region": { "type": "string" },
+          "status": { "type": "string", "enum": ["running", "suspended", "deploying"] }
+        }
+      },
+      "AppList": {
+        "type": "object",
+        "required": ["apps"],
+        "properties": {
+          "apps": { "type": "array", "items": { "$ref": "#/components/schemas/AppSummary" } }
+        }
+      },
+      "DeploymentRequest": {
+        "type": "object",
+        "required": ["image", "config"],
+        "properties": {
+          "image": { "type": "string" },
+          "tag": { "type": "string", "default": "latest" },
+          "strategy": { "type": "string", "enum": ["rolling", "canary", "blue_green"] },
+          "config": { "$ref": "#/components/schemas/RuntimeConfig" },
+          "env": { "type": "object", "additionalProperties": { "type": "string" } }
+        }
+      },
+      "Deployment": {
+        "type": "object",
+        "required": ["id", "app_id", "image", "state", "endpoint_url", "config"],
+        "properties": {
+          "id": { "type": "string" },
+          "app_id": { "type": "string" },
+          "image": { "type": "string" },
+          "state": { "type": "string", "enum": ["queued", "building", "healthy", "failed"] },
+          "endpoint_url": { "type": "string" },
+          "config": { "$ref": "#/components/schemas/RuntimeConfig" }
+        }
+      },
+      "RollbackRequest": {
+        "type": "object",
+        "required": ["target_deployment_id"],
+        "properties": {
+          "target_deployment_id": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      },
+      "EnvPatchRequest": {
+        "type": "object",
+        "required": ["variables"],
+        "properties": {
+          "variables": { "type": "object", "additionalProperties": { "type": "string" } },
+          "restart": { "type": "boolean", "default": true }
+        }
+      },
+      "EnvSnapshot": {
+        "type": "object",
+        "required": ["app_id", "revision", "keys"],
+        "properties": {
+          "app_id": { "type": "string" },
+          "revision": { "type": "integer" },
+          "keys": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "DeployError": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}
