@@ -1,4 +1,4 @@
-# 🌊 Watay (`watay.io`)
+# 🌊 Watay (`watay.dev`)
 
 > **Autonomous Multi-Language SDK Generation, SpecDrift Semantic Gatekeeper & Contract Testing.**  
 > *100% Client-Side Execution. Zero-Data-Retention. Zero External Runtime Dependencies.*
@@ -206,7 +206,7 @@ Watay is built on an open-core model. All core CLI generation and diffing capabi
 | **Custom CodeGen Templates** | ❌ | ❌ | ✅ Full Access |
 | **Offline Air-Gapped Keys** | ❌ | ✅ Available | ✅ Dedicated |
 
-Purchase license keys instantly via self-serve at [watay.io/pricing](https://watay.io#pricing).
+Purchase license keys instantly via self-serve at [watay.dev/pricing](https://watay.dev#pricing).
 
 ---
 

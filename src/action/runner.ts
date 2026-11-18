@@ -564,7 +564,7 @@ function buildMarkdownReport(params: {
 
   lines.push('');
   lines.push('---');
-  lines.push('*Automated by [Watay](https://watay.io) — Autonomous SDK Generation & API Contract Testing.*');
+  lines.push('*Automated by [Watay](https://watay.dev) — Autonomous SDK Generation & API Contract Testing.*');
 
   return lines.join('\n');
 }

@@ -101,7 +101,7 @@ async function checkCliLicense(key?: string): Promise<LicenseStatus> {
 }
 
 function helpText(): string {
-  return `Watay v${VERSION} — Autonomous SDK Generation, SpecDrift & Contract Testing (watay.io)
+  return `Watay v${VERSION} — Autonomous SDK Generation, SpecDrift & Contract Testing (watay.dev)
 
 Usage:
   watay <command> [options]

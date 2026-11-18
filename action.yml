@@ -1,6 +1,6 @@
 name: 'Watay – Autonomous SDK Generation & SpecDrift Gatekeeper'
 description: 'Autonomous Multi-Language SDK Generation, semantic OpenAPI breaking-change detection, and contract testing. 100% Client-Side with Zero-Data-Retention.'
-author: 'TestInc (watay.io)'
+author: 'TestInc (watay.dev)'
 branding:
   icon: 'shield'
   color: 'blue'

@@ -286,7 +286,7 @@ describe('Watay Codegen: Identifier Hygiene, Auth, Retries & Wire Mapping', () =
       };
 
       const client = new EdgeCaseApiClient({
-        baseUrl: 'https://mock.watay.io',
+        baseUrl: 'https://mock.watay.dev',
         fetch: fakeFetch,
         bearerToken: 'tok-123',
         basicAuth: { username: 'u', password: 'p' },
@@ -320,7 +320,7 @@ describe('Watay Codegen: Identifier Hygiene, Auth, Retries & Wire Mapping', () =
 
       // 5. Non-2xx maps to ApiError when server returns 404
       const errClient = new EdgeCaseApiClient({
-        baseUrl: 'https://mock.watay.io',
+        baseUrl: 'https://mock.watay.dev',
         fetch: async () =>
           new Response(JSON.stringify({ code: 404, message: 'missing' }), {
             status: 404,
