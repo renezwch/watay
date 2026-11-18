@@ -1,0 +1,77 @@
+name: 'Watay – Autonomous SDK Generation & SpecDrift Gatekeeper'
+description: 'Autonomous Multi-Language SDK Generation, semantic OpenAPI breaking-change detection, and contract testing. 100% Client-Side with Zero-Data-Retention.'
+author: 'TestInc (watay.io)'
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  spec-path:
+    description: 'Path to the OpenAPI 3.0 / 3.1 specification file (JSON or YAML).'
+    required: true
+    default: 'openapi.json'
+  base-spec-path:
+    description: 'Path to the baseline specification file to compare against for SpecDrift analysis.'
+    required: false
+  base-ref:
+    description: 'Git branch or ref to compare against (e.g. main) when base-spec-path is omitted.'
+    required: false
+    default: 'main'
+  fail-on-breaking:
+    description: 'Fail the GitHub workflow if breaking changes are detected (can be overridden by adding the "watay-allow-breaking" label to the PR).'
+    required: false
+    default: 'true'
+  post-comment:
+    description: 'Post an automated SpecDrift & SDK summary report as a comment on the pull request.'
+    required: false
+    default: 'true'
+  languages:
+    description: 'Comma-separated target languages for SDK generation (e.g. typescript,python).'
+    required: false
+    default: 'typescript,python'
+  output-dir:
+    description: 'Directory where generated SDK code will be written.'
+    required: false
+    default: './generated-sdks'
+  license-key:
+    description: 'Watay Pro or Scale license key (optional, defaults to Community Free tier).'
+    required: false
+  github-token:
+    description: 'GitHub token with pull-requests:write permissions for automated PR comments.'
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  has-breaking:
+    description: 'Whether breaking changes were detected in the OpenAPI specification ("true" or "false").'
+    value: ${{ steps.watay-runner.outputs.has-breaking }}
+  suggested-bump:
+    description: 'Recommended SemVer bump based on SpecDrift analysis (major, minor, patch, or none).'
+    value: ${{ steps.watay-runner.outputs.suggested-bump }}
+  breaking-count:
+    description: 'Total number of breaking changes detected.'
+    value: ${{ steps.watay-runner.outputs.breaking-count }}
+  tier:
+    description: 'Active license tier evaluated on client runner (free, pro, or scale).'
+    value: ${{ steps.watay-runner.outputs.tier }}
+  sdk-generated:
+    description: 'Whether client SDKs were generated in this run ("true" or "false").'
+    value: ${{ steps.watay-runner.outputs.sdk-generated }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: watay-runner
+      name: Execute Watay Client-Side Engine
+      shell: bash
+      env:
+        INPUT_SPEC_PATH: ${{ inputs.spec-path }}
+        INPUT_BASE_SPEC_PATH: ${{ inputs.base-spec-path }}
+        INPUT_BASE_REF: ${{ inputs.base-ref }}
+        INPUT_FAIL_ON_BREAKING: ${{ inputs.fail-on-breaking }}
+        INPUT_POST_COMMENT: ${{ inputs.post-comment }}
+        INPUT_LANGUAGES: ${{ inputs.languages }}
+        INPUT_OUTPUT_DIR: ${{ inputs.output-dir }}
+        INPUT_LICENSE_KEY: ${{ inputs.license-key }}
+        INPUT_GITHUB_TOKEN: ${{ inputs.github-token }}
+      run: node "${{ github.action_path }}/src/action/runner.ts"

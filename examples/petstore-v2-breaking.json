@@ -1,0 +1,138 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Petstore",
+    "version": "2.0.0",
+    "description": "Example API used by Watay for demos and tests (v2 with intentional breaking changes)."
+  },
+  "servers": [{ "url": "https://api.petstore.example/v2" }],
+  "paths": {
+    "/pets": {
+      "get": {
+        "operationId": "listPets",
+        "summary": "List all pets",
+        "tags": ["pets"],
+        "parameters": [
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "tag", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "species", "in": "query", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of pets",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Pet" } } } }
+          },
+          "default": { "description": "Unexpected error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      },
+      "post": {
+        "operationId": "createPet",
+        "summary": "Create a pet",
+        "tags": ["pets"],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/NewPet" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Created",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } }
+          },
+          "default": { "description": "Unexpected error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/pets/{petId}": {
+      "parameters": [{ "name": "petId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }],
+      "get": {
+        "operationId": "getPet",
+        "summary": "Get a pet by id",
+        "tags": ["pets"],
+        "parameters": [{ "name": "include", "in": "query", "required": false, "schema": { "type": "string" } }],
+        "responses": {
+          "200": {
+            "description": "The pet",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Pet" } } }
+          },
+          "404": { "description": "Pet not found" },
+          "default": { "description": "Unexpected error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/pets/{petId}/vaccinations": {
+      "get": {
+        "operationId": "listVaccinations",
+        "summary": "List vaccinations of a pet",
+        "tags": ["pets"],
+        "parameters": [{ "name": "petId", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" } }],
+        "responses": {
+          "200": {
+            "description": "Vaccinations",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object", "required": ["name"], "properties": { "name": { "type": "string" } } } } } }
+          }
+        }
+      }
+    },
+    "/owners/{ownerId}": {
+      "get": {
+        "operationId": "getOwner",
+        "summary": "Get an owner",
+        "deprecated": true,
+        "tags": ["owners"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [{ "name": "ownerId", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": {
+            "description": "The owner",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Owner" } } }
+          },
+          "404": { "description": "Not found" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": { "bearerAuth": { "type": "http", "scheme": "bearer" } },
+    "schemas": {
+      "Pet": {
+        "type": "object",
+        "required": ["id", "fullName"],
+        "properties": {
+          "id": { "type": "string" },
+          "fullName": { "type": "string", "maxLength": 100 },
+          "tag": { "type": "string", "nullable": true },
+          "status": { "type": "string", "enum": ["available", "pending", "sold", "adopted"] },
+          "birthDate": { "type": "string", "format": "date" },
+          "owner": { "$ref": "#/components/schemas/Owner" }
+        }
+      },
+      "NewPet": {
+        "type": "object",
+        "required": ["name", "species"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 50 },
+          "species": { "type": "string", "enum": ["dog", "cat", "bird"] },
+          "tag": { "type": "string" },
+          "status": { "type": "string", "enum": ["available", "pending"] }
+        }
+      },
+      "Owner": {
+        "type": "object",
+        "required": ["id", "email"],
+        "properties": {
+          "id": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "pets": { "type": "array", "items": { "$ref": "#/components/schemas/Pet" } }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["code", "message"],
+        "properties": {
+          "code": { "type": "integer", "format": "int32" },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  }
+}

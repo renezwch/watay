@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watay – Autonomous Multi-Language SDK Generation & SpecDrift Gatekeeper</title>
+  <meta name="description" content="Autonomous TypeScript & Python SDK generation, semantic OpenAPI breaking-change detection, and contract testing. 100% Client-Side with Zero-Data-Retention.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌊</text></svg>">
+  <style>
+    :root {
+      --bg: #07090e;
+      --bg-card: #0e131f;
+      --bg-card-hover: #141b2d;
+      --border: #1e293b;
+      --border-focus: #38bdf8;
+      --text: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-glow: rgba(56, 189, 248, 0.25);
+      --accent-green: #34d399;
+      --accent-purple: #c084fc;
+      --accent-red: #f87171;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Background Glow */
+    .glow-bg {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.12) 0%, rgba(192, 132, 252, 0.05) 50%, transparent 80%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.35rem;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .brand-badge {
+      font-size: 0.7rem;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .btn-nav {
+      background: #1e293b;
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-nav:hover {
+      background: #334155;
+      border-color: #475569;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+    .hero-badge span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      box-shadow: 0 0 8px var(--accent);
+    }
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 36px;
+      font-weight: 400;
+    }
+
+    /* Terminal Bar */
+    .terminal-bar {
+      display: inline-flex;
+      align-items: center;
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      color: #e2e8f0;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      margin-bottom: 40px;
+      gap: 16px;
+    }
+    .terminal-prefix { color: var(--accent); user-select: none; }
+    .btn-copy {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: var(--font-sans);
+      transition: all 0.2s;
+    }
+    .btn-copy:hover {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+
+    /* Hero CTA */
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 70px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.4);
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(2, 132, 199, 0.5);
+    }
+    .btn-secondary {
+      background: #111827;
+      color: #f3f4f6;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: #1f2937;
+      border-color: #374151;
+      transform: translateY(-2px);
+    }
+
+    /* Interactive Code Preview */
+    .preview-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      margin-bottom: 100px;
+      text-align: left;
+    }
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #090e17;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 20px;
+    }
+    .window-dots {
+      display: flex;
+      gap: 6px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #eab308; }
+    .dot-green { background: #22c55e; }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+    }
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .code-container {
+      padding: 24px;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      overflow-x: auto;
+      background: #080c14;
+      min-height: 340px;
+    }
+    pre { margin: 0; color: #cbd5e1; }
+    .kw { color: #f472b6; }
+    .fn { color: #38bdf8; }
+    .str { color: #a7f3d0; }
+    .cmt { color: #64748b; font-style: italic; }
+    .typ { color: #fde047; }
+    .tag { color: #c084fc; }
+
+    /* Features Grid */
+    .section-title {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    .section-title h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+      margin-bottom: 100px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 30px;
+      transition: all 0.2s;
+    }
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Zero-Data-Retention Banner */
+    .zdr-banner {
+      background: linear-gradient(135deg, rgba(14, 21, 37, 0.9) 0%, rgba(20, 30, 55, 0.9) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: 16px;
+      padding: 40px;
+      margin-bottom: 100px;
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .zdr-icon {
+      font-size: 3.5rem;
+      flex-shrink: 0;
+    }
+    .zdr-content h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+    .zdr-content p {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    /* Pricing Section */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      margin-bottom: 120px;
+    }
+    .price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 30px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .price-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(180deg, #0c1524 0%, #0a111e 100%);
+      box-shadow: 0 12px 36px rgba(56, 189, 248, 0.15);
+    }
+    .price-badge {
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      background: var(--accent);
+      color: #07090e;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .price-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .price-sub {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 24px;
+      min-height: 40px;
+    }
+    .price-val {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 28px;
+    }
+    .price-val span {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .price-features {
+      list-style: none;
+      margin-bottom: 32px;
+    }
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #cbd5e1;
+      font-size: 0.92rem;
+      margin-bottom: 12px;
+    }
+    .check { color: var(--accent-green); font-weight: bold; }
+    .btn-plan {
+      width: 100%;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+    .btn-plan-default {
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--border);
+    }
+    .btn-plan-default:hover { background: #334155; }
+    .btn-plan-accent {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+    }
+    .btn-plan-accent:hover { transform: translateY(-2px); }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: #fff; }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2.4rem; }
+      .zdr-banner { flex-direction: column; text-align: center; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-bg"></div>
+
+  <div class="container">
+    <!-- Navbar -->
+    <nav>
+      <a href="#" class="brand">
+        <span>🌊</span> Watay
+        <span class="brand-badge">v0.1 MVP</span>
+      </a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#preview">Code Preview</a>
+        <a href="#zero-data-retention">Security (ZDR)</a>
+        <a href="#pricing">Pricing</a>
+        <a href="https://github.com/testinc/watay" class="btn-nav" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="hero-badge">
+        <span></span> 100% Client-Side Engine · Zero Data Retention
+      </div>
+      <h1>Autonomous Multi-Language SDKs<br>& SpecDrift Gatekeeper</h1>
+      <p class="hero-sub">
+        Generate idiomatic TypeScript & Python SDKs straight from OpenAPI 3.0/3.1 specs.
+        Detect breaking API changes before merging PRs. Runs entirely inside your GitHub runner.
+      </p>
+
+      <div class="terminal-bar">
+        <span class="terminal-prefix">$</span>
+        <span id="cmd-text">npx watay diff openapi-v1.json openapi-v2.json --fail-on-breaking</span>
+        <button class="btn-copy" onclick="copyCommand(this)">Copy</button>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#pricing" class="btn-primary">Start Building Free</a>
+        <a href="#preview" class="btn-secondary">Explore Live Preview</a>
+      </div>
+    </header>
+
+    <!-- Interactive Code Preview -->
+    <section id="preview" class="preview-card">
+      <div class="preview-header">
+        <div class="window-dots">
+          <div class="dot dot-red"></div>
+          <div class="dot dot-yellow"></div>
+          <div class="dot dot-green"></div>
+        </div>
+        <div class="tabs">
+          <button class="tab-btn active" onclick="switchTab('ts', this)">TypeScript SDK</button>
+          <button class="tab-btn" onclick="switchTab('py', this)">Python SDK</button>
+          <button class="tab-btn" onclick="switchTab('diff', this)">SpecDrift PR Report</button>
+          <button class="tab-btn" onclick="switchTab('action', this)">action.yml</button>
+        </div>
+        <button class="btn-copy" onclick="copySnippet(this)">Copy Snippet</button>
+      </div>
+
+      <div class="code-container">
+        <!-- TypeScript Tab -->
+        <pre id="code-ts"><code><span class="cmt">// Generated by Watay (Zero-Data-Retention · Deterministic Output)</span>
+<span class="kw">import</span> { <span class="typ">PetstoreClient</span> } <span class="kw">from</span> <span class="str">'@org/petstore-sdk'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="typ">Pet</span> } <span class="kw">from</span> <span class="str">'@org/petstore-sdk'</span>;
+
+<span class="kw">const</span> client = <span class="kw">new</span> <span class="fn">PetstoreClient</span>({
+  baseUrl: <span class="str">'https://api.petstore.com/v1'</span>,
+  apiKey: process.env.<span class="typ">PETSTORE_API_KEY</span>
+});
+
+<span class="cmt">// Flat, fully typed method with runtime schema validation</span>
+<span class="kw">async function</span> <span class="fn">syncPet</span>() {
+  <span class="kw">const</span> newPet: <span class="typ">Pet</span> = <span class="kw">await</span> client.<span class="fn">createPet</span>({
+    body: {
+      name: <span class="str">'Koa'</span>,
+      category: <span class="str">'canine'</span>,
+      status: <span class="str">'available'</span>
+    }
+  });
+  console.<span class="fn">log</span>(<span class="str">`Pet registered with ID: ${newPet.id}`</span>);
+}</code></pre>
+
+        <!-- Python Tab -->
+        <pre id="code-py" style="display: none;"><code><span class="cmt"># Generated by Watay (Zero Dependencies · Python 3.10+ dataclasses & urllib)</span>
+<span class="kw">from</span> petstore_sdk <span class="kw">import</span> <span class="typ">PetstoreClient</span>, <span class="typ">Pet</span>
+
+client = <span class="typ">PetstoreClient</span>(
+    base_url=<span class="str">"https://api.petstore.com/v1"</span>,
+    api_key=<span class="str">"sk_live_sample"</span>
+)
+
+<span class="cmt"># Flat, fully typed client using native stdlib</span>
+pet: <span class="typ">Pet</span> = client.create_pet(
+    body={
+        <span class="str">"name"</span>: <span class="str">"Koa"</span>,
+        <span class="str">"category"</span>: <span class="str">"canine"</span>,
+        <span class="str">"status"</span>: <span class="str">"available"</span>
+    }
+)
+print(<span class="str">f"Pet created: {pet.id} - {pet.name}"</span>)</code></pre>
+
+        <!-- SpecDrift Report Tab -->
+        <pre id="code-diff" style="display: none;"><code><span class="tag">## 🌊 Watay SpecDrift & SDK Report</span>
+<span class="cmt">> 🛡️ Zero-Data-Retention: 100% client-side runner execution.</span>
+
+**API:** `PetStore API` v`2.1.0` | **License Tier:** `PRO`
+
+### 🚨 Semantic SpecDrift Analysis
+- **Suggested SemVer Bump:** `MAJOR`
+- **Breaking Changes:** `1`
+- **Non-Breaking Changes:** `2`
+
+#### 🚨 Breaking Changes
+| Code | Location | Description |
+| :--- | :--- | :--- |
+| `required-param-added` | `POST /pets` | Required query parameter `tenant_id` added without default |
+
+#### ✨ Non-Breaking Additions
+| Code | Location | Description |
+| :--- | :--- | :--- |
+| `operation-added` | `GET /pets/{petId}/vaccinations` | New operation endpoint |
+
+<span class="str">> ❌ Gatekeeper: Pull request blocked by Watay (override with "watay-allow-breaking" label).</span></code></pre>
+
+        <!-- GitHub Action Tab -->
+        <pre id="code-action" style="display: none;"><code><span class="cmt"># .github/workflows/watay-specdrift.yml</span>
+<span class="kw">name</span>: <span class="str">API SpecDrift & SDK Build</span>
+<span class="kw">on</span>:
+  <span class="kw">pull_request</span>:
+    <span class="kw">paths</span>: [<span class="str">'openapi.json'</span>]
+
+<span class="kw">jobs</span>:
+  <span class="kw">gatekeeper</span>:
+    <span class="kw">runs-on</span>: <span class="str">ubuntu-latest</span>
+    <span class="kw">steps</span>:
+      - <span class="kw">uses</span>: <span class="str">actions/checkout@v4</span>
+        <span class="kw">with</span>: { <span class="kw">fetch-depth</span>: <span class="str">0</span> }
+      - <span class="kw">uses</span>: <span class="str">actions/setup-node@v4</span>
+        <span class="kw">with</span>: { <span class="kw">node-version</span>: <span class="str">22</span> }
+      - <span class="kw">uses</span>: <span class="str">testinc/watay@v1</span>
+        <span class="kw">with</span>:
+          <span class="kw">spec-path</span>: <span class="str">'openapi.json'</span>
+          <span class="kw">fail-on-breaking</span>: <span class="str">'true'</span>
+          <span class="kw">post-comment</span>: <span class="str">'true'</span>
+          <span class="kw">languages</span>: <span class="str">'typescript,python'</span>
+          <span class="kw">license-key</span>: <span class="str">${{ secrets.WATAY_LICENSE_KEY }}</span></code></pre>
+      </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section id="features">
+      <div class="section-title">
+        <h2>Engineered for Modern API Teams</h2>
+        <p>No vendor lock-in. No cloud proxies. Complete autonomy in your CI/CD.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="feature-card">
+          <div class="feature-icon">🛡️</div>
+          <h3>Zero Data Retention</h3>
+          <p>
+            Your specs and code never leave your runner. Watay operates 100% client-side with zero data storage or external schema processing.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🧬</div>
+          <h3>Directional SpecDrift</h3>
+          <p>
+            Distinguishes between request parameters (contravariant) and response properties (covariant). Flags breaking changes with surgical accuracy.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>Zero Node Dependencies</h3>
+          <p>
+            Built for Node 22+ native TypeScript execution. No bloat, no vulnerabilities from third-party npm runtime dependencies.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🐍</div>
+          <h3>Python Stdlib Codegen</h3>
+          <p>
+            Generates pure Python SDKs using built-in <code>dataclasses</code> and <code>urllib</code>. Instant compatibility across any Python 3.10+ runtime.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🩹</div>
+          <h3>Self-Healing Verification</h3>
+          <p>
+            Validates generated SDKs against local HTTP mock servers synthesized from your spec. Supports optional BYOK LLM repair hooks.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>Automated PR Comments</h3>
+          <p>
+            Publishes clean, idempotent Markdown diffs directly to Pull Requests. Recommends SemVer bumps (MAJOR, MINOR, PATCH).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Zero-Data-Retention Deep Dive -->
+    <section id="zero-data-retention" class="zdr-banner">
+      <div class="zdr-icon">🔒</div>
+      <div class="zdr-content">
+        <h3>Enterprise Security by Design: Zero-Data-Retention</h3>
+        <p>
+          Traditional SDK platforms proxy your proprietary OpenAPI schemas through multi-tenant cloud backends, introducing compliance risks and security audits. 
+          Watay executes completely inside your existing GitHub Action or self-hosted runner. The only outbound network call is an optional, payload-free license ping to Polar.sh or LemonSqueezy.
+        </p>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing">
+      <div class="section-title">
+        <h2>Transparent, Fair Pricing</h2>
+        <p>Start free forever with our Open-Source CLI. Upgrade for autonomous CI/CD automation.</p>
+      </div>
+
+      <div class="pricing-grid">
+        <!-- Free Community -->
+        <div class="price-card">
+          <div>
+            <div class="price-name">Community</div>
+            <div class="price-sub">For individual developers and open-source projects.</div>
+            <div class="price-val">$0 <span>/ forever</span></div>
+            <ul class="price-features">
+              <li><span class="check">✓</span> 100% Client-Side CLI</li>
+              <li><span class="check">✓</span> Unlimited TypeScript & Python SDKs</li>
+              <li><span class="check">✓</span> SpecDrift Semantic Differ (Local)</li>
+              <li><span class="check">✓</span> Zero Data Retention</li>
+              <li><span class="check">✓</span> Deterministic AST Output</li>
+            </ul>
+          </div>
+          <a href="https://github.com/testinc/watay" class="btn-plan btn-plan-default">Get Started Free</a>
+        </div>
+
+        <!-- Pro Tier -->
+        <div class="price-card featured">
+          <div class="price-badge">Most Popular</div>
+          <div>
+            <div class="price-name">Pro</div>
+            <div class="price-sub">For fast-moving engineering teams scaling APIs.</div>
+            <div class="price-val">$49 <span>/ repo / mo</span></div>
+            <ul class="price-features">
+              <li><span class="check">✓</span> Everything in Community</li>
+              <li><span class="check">✓</span> GitHub Action SpecDrift Gatekeeper</li>
+              <li><span class="check">✓</span> Automated PR Markdown Comments</li>
+              <li><span class="check">✓</span> CI Block on Breaking Changes</li>
+              <li><span class="check">✓</span> Self-Healing Mock Verification</li>
+              <li><span class="check">✓</span> Offline / Air-Gapped Key Support</li>
+            </ul>
+          </div>
+          <a href="https://buy.polar.sh/watay-pro" class="btn-plan btn-plan-accent">Upgrade to Pro</a>
+        </div>
+
+        <!-- Scale Tier -->
+        <div class="price-card">
+          <div>
+            <div class="price-name">Scale</div>
+            <div class="price-sub">For enterprises requiring multi-tenant automation.</div>
+            <div class="price-val">$199 <span>/ org / mo</span></div>
+            <ul class="price-features">
+              <li><span class="check">✓</span> Everything in Pro</li>
+              <li><span class="check">✓</span> Unlimited Repositories & Workflows</li>
+              <li><span class="check">✓</span> Auto-Publish to npm & PyPI registries</li>
+              <li><span class="check">✓</span> Custom Mustache / AST Templates</li>
+              <li><span class="check">✓</span> Priority BYOK LLM Repair Hook</li>
+              <li><span class="check">✓</span> Dedicated Air-Gapped Key Generation</li>
+            </ul>
+          </div>
+          <a href="https://buy.polar.sh/watay-scale" class="btn-plan btn-plan-default">Upgrade to Scale</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>© 2026 TestInc. All rights reserved. • <a href="https://watay.io">watay.io</a> • Open-Source MIT License</p>
+    </footer>
+  </div>
+
+  <script>
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+      if (btn) btn.classList.add('active');
+
+      document.getElementById('code-ts').style.display = 'none';
+      document.getElementById('code-py').style.display = 'none';
+      document.getElementById('code-diff').style.display = 'none';
+      document.getElementById('code-action').style.display = 'none';
+
+      document.getElementById('code-' + tab).style.display = 'block';
+    }
+
+    function copyCommand(btn) {
+      const text = document.getElementById('cmd-text').innerText;
+      navigator.clipboard.writeText(text);
+      if (btn) {
+        btn.innerText = 'Copied!';
+        setTimeout(function() { btn.innerText = 'Copy'; }, 2000);
+      }
+    }
+
+    function copySnippet(btn) {
+      const activePre = document.querySelector('.code-container pre:not([style*="display: none"])');
+      if (activePre) {
+        navigator.clipboard.writeText(activePre.innerText);
+        if (btn) {
+          btn.innerText = 'Copied!';
+          setTimeout(function() { btn.innerText = 'Copy Snippet'; }, 2000);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
